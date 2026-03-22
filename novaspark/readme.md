@@ -117,7 +117,7 @@ Both courses arrive at this architecture — undergrad by building it piece by p
 | IaC introduction | Week 2, Lab 2 — write Pulumi from scratch across 3 parts | Week 2, Lab 2 — read + annotate provided template, justify every decision |
 | VPC and networking | Week 3–4, Lab 3 P1+P2 — build the VPC, SSH patterns | Week 3, Lab 3 — deploy provided template, draw the diagram, justify routing; multi-VPC discussion |
 | Lambda + API Gateway | Week 7, Lab 5 — deploy from scratch, this is the project foundation | Week 5, Lab 5 — deploy provided template, analyze cold start behavior |
-| *"Hardcoded data isn't a real service"* — Janet's challenge | Week 9, Lab 7 — add DynamoDB, implement POST route, declare project scope | Week 4, Lab 4 — design access patterns first, console-only DynamoDB, PITR + RTO/RPO |
+| *"We are Having Performance and Reiability Challenges Managing Virtual Servers"* — Janet's challenge | Week 9, Lab 7 — add DynamoDB, implement POST route, declare project scope | Week 4, Lab 4 — design access patterns first, console-only DynamoDB, PITR + RTO/RPO |
 | Event-driven architecture | Not covered as a dedicated lab — mentioned in Week 5 lecture | Week 6, Workshop 6 — full design exercise, SQS vs SNS vs EventBridge |
 | WAF audit | Week 8, Lab 6 — audit the architecture from Labs 2–5 | Woven throughout; explicit in Week 9 lecture; final project reflection requires WAF self-assessment |
 | Security / IAM | Introduced in Lab 2 (IAM role), enforced in project rubric (no AdministratorAccess) | Week 8 lecture + Linda's "confused deputy" challenge; security gaps explicitly audited |
