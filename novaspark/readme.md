@@ -70,7 +70,7 @@ Both courses arrive at this architecture — undergrad by building it piece by p
 - Costs that Ben can explain and predict
 - Security posture that Linda can defend
 
-**The NovaSpark "status service" thread:** The most concrete through-line in both courses is a status event service — a simple API that records when NovaSpark's internal services are healthy, degraded, or down. It starts as hardcoded data in a Lambda function and ends as a real DynamoDB-backed API. Janet's recurring complaint — *"hardcoded data isn't a real service"* — is the trigger that motivates the storage lecture and the project.
+**The NovaSpark "status service" thread:** The most concrete through-line in both courses is a status event service — a simple API that records when NovaSpark's internal services are healthy, degraded, or down. It starts as virtual server hosted API that gets migrated to a Lambda function with a DynamoDB-backed API. Janet's recurring complaint — *"we are having performance issues managing our virtual servers"* — is the trigger that motivates the storage lecture and the project.
 
 ---
 
