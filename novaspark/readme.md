@@ -4,6 +4,8 @@
 
 **Purpose:** This document tracks the NovaSpark story from Week 1 through the final project in both courses. Use it as a reference when writing new lecture content, lab guides, or slide speaker notes to ensure the narrative thread stays consistent and the company's "state" at any given week is plausible.
 
+Read more about  [NovaSpark Technologies Here](../novaspark/readme.md)
+
 ---
 
 ## The Company and Cast

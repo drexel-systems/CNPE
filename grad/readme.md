@@ -279,7 +279,7 @@ All labs and the final project are set in the context of **NovaSpark Technologie
 - **Ben** — Engineering Manager. Focused on shipping velocity, cost, and operational reliability. He's the one explaining the AWS bill.
 - **Linda** — SRE lead. Worried about reliability, security, and what happens at 3am. Pushes back on anything that isn't production-grade.
 
-A one-page NovaSpark briefing is on Canvas. Read it before Week 1.
+Read more about  [NovaSpark Technologies Here](../novaspark/readme.md)
 
 ---
 
