@@ -54,7 +54,7 @@ All resources in a VPC with public/private subnets
 IAM roles scoped to least privilege
 ```
 
-Both courses arrive at this architecture — undergrad by building it piece by piece, graduate by evaluating and justifying it. The same architecture serves as the basis for the capstone project (CS 463) and the Architecture Design Document (CS 545).
+Both courses arrive at this architecture — undergrad by building it piece by piece, graduate by evaluating and justifying it. The same architecture serves as the basis for the capstone project (Undergrad) and the Architecture Design Document (Graduate).
 
 ---
 
@@ -70,7 +70,7 @@ Both courses arrive at this architecture — undergrad by building it piece by p
 - Costs that Ben can explain and predict
 - Security posture that Linda can defend
 
-**The NovaSpark "status service" thread:** The most concrete through-line in both courses is a status event service — a simple API that records when NovaSpark's internal services are healthy, degraded, or down. It starts as hardcoded data in a Lambda function (Lab 5 / CS 463 Week 7) and ends as a real DynamoDB-backed API. Janet's recurring complaint — *"hardcoded data isn't a real service"* — is the trigger that motivates the storage lecture and the project.
+**The NovaSpark "status service" thread:** The most concrete through-line in both courses is a status event service — a simple API that records when NovaSpark's internal services are healthy, degraded, or down. It starts as hardcoded data in a Lambda function and ends as a real DynamoDB-backed API. Janet's recurring complaint — *"hardcoded data isn't a real service"* — is the trigger that motivates the storage lecture and the project.
 
 ---
 
@@ -103,7 +103,7 @@ Both courses arrive at this architecture — undergrad by building it piece by p
 | **5** | NovaSpark's status service needs a real API. Janet: "I want to be able to `curl` this and get structured data back." Graduate framing: evaluate the performance implications of what you deploy. | Janet | Deploy provided Lambda + API Gateway Pulumi template. Modify handler to return structured JSON. Test with `curl`. Write 1-page performance analysis: cold start observations + what traffic pattern would make you reconsider Lambda. | **Lambda + API Gateway** deployed. Cold start behavior documented. Performance analysis becomes the compute section of the ADD. |
 | **6** | Janet: *"If the status API goes down, three downstream services don't find out for 15 minutes. We need real-time notification."* Graduate framing: redesign the architecture for async fan-out without touching AWS. | Janet | Workshop (no AWS). Design an event-driven extension: given fan-out to email + Slack + a database write, choose between SQS / SNS / EventBridge. Draw the architecture diagram, annotate component choices, justify async over sync. | No new AWS infrastructure. **Architecture diagram from this workshop is the event-driven section of the ADD.** |
 | **7** | ADD due. Janet wants to see the full architecture on paper before anything else gets built. *"I need to show this to the board. One document, the whole picture."* | Janet | No Block 3 lab. Block 2 discussion (SRE Book: monitoring distributed systems). Extra time for ADD peer review. **Architecture Design Document due end of week.** | **ADD submitted** — the full NovaSpark architecture documented: VPC, Lambda, DynamoDB, event-driven extension, security posture, cost model. |
-| **8** | Linda: *"The Lambda roles are too permissive. And why does the S3 bucket have public read enabled? We need to fix this before it goes anywhere near production."* Graduate framing: audit your own architecture for security gaps. | Linda | Project work session. Pulumi stack initialized, DynamoDB table defined, at least one Lambda route stubbed. Project scope declared in writing. Research response: IAM and the confused deputy problem. | **Project initialized** — same Lambda + DynamoDB + API Gateway architecture as CS 463, but now students know where the security gaps are. |
+| **8** | Linda: *"The Lambda roles are too permissive. And why does the S3 bucket have public read enabled? We need to fix this before it goes anywhere near production."* Graduate framing: audit your own architecture for security gaps. | Linda | Project work session. Pulumi stack initialized, DynamoDB table defined, at least one Lambda route stubbed. Project scope declared in writing. Research response: IAM and the confused deputy problem. | **Project initialized** — same Lambda + DynamoDB + API Gateway architecture as the undergraduate offering, but now students know where the security gaps are. |
 | **9** | Ben: *"I ran the AWS bill projection and it's three times what I told Janet. We need to right-size this before it goes live."* | Ben | Complete all 3 required API routes. Cost analysis using AWS Pricing Calculator at 3 traffic levels (100/10K/1M req/day). Write half-page summary of cost curve and biggest architectural cost lever. | All routes working. Cost model documented. |
 | **10** | Janet: *"Containers keep coming up in every vendor conversation. Where does that fit with what we've built? And what would you build differently if you were starting over today?"* | Janet | Final project work session + overflow. Finalize demo video, complete reflection. **Final project due end of week.** | Final state: working serverless API, fully in Pulumi, IAM least-privilege. **Reflection looks back across 10 weeks of NovaSpark's journey.** |
 
@@ -111,7 +111,7 @@ Both courses arrive at this architecture — undergrad by building it piece by p
 
 ## Cross-Reference: Themes across both courses
 
-| NovaSpark moment | CS 463 (build it) | CS 545 (evaluate it) |
+| NovaSpark moment | Undergrad (build it) | Graduate (evaluate it) |
 |-----------------|-------------------|----------------------|
 | AWS account setup | Week 1, Lab 1 — configure from scratch | Week 1, Lab 1 — same setup, plus billing alarm as a deliberate cost-discipline act tied to Barroso reading |
 | IaC introduction | Week 2, Lab 2 — write Pulumi from scratch across 3 parts | Week 2, Lab 2 — read + annotate provided template, justify every decision |
