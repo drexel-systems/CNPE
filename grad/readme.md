@@ -5,7 +5,7 @@
 
 **Email:** bmitchell@drexel.edu
 
-**Department:** Computer Science, College of Engineering and Computing (also CCI)
+**Department:** Computer Science, College of Engineering and Computing (formerly CCI)
 
 ---
 
