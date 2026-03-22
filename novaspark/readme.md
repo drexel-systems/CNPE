@@ -16,8 +16,6 @@
 | **Ben** | Engineering Manager | Delivery, cost, and operations. "Will this break at 3am, and how much will it cost?" He's the one who has to explain the AWS bill to Janet and keep the team from over-engineering. |
 | **Linda** | SRE / Senior Engineer | Reliability, security, and operational correctness. "Who gets paged when this breaks?" She pushes back on anything that isn't production-grade. Often the voice that introduces failure modes and security concerns. |
 
-The student is never named — they're "you." 
-
 ---
 
 ## NovaSpark Internal Asset Naming — Dragon Theme
@@ -111,7 +109,7 @@ Both courses arrive at this architecture — undergrad by building it piece by p
 
 ---
 
-## Cross-Reference: Same Moments, Different Framing
+## Cross-Reference: Themes across both courses
 
 | NovaSpark moment | CS 463 (build it) | CS 545 (evaluate it) |
 |-----------------|-------------------|----------------------|
@@ -126,28 +124,3 @@ Both courses arrive at this architecture — undergrad by building it piece by p
 | Final project | Weeks 9–11 — build a working serverless API from the Lab 5 foundation | Weeks 8–10 — same technical stack; students know the architecture already from the ADD |
 | Architecture documentation | Project written reflection (1–2 pages, WAF self-assessment) | Architecture Design Document (10–14 pages, due Week 7) — the whole architecture before building |
 
----
-
-## The "Hardcoded Data" Confusion — Clarified
-
-The line *"NovaSpark's status API returns hardcoded data"* appears in the Week 9 / Lecture 8 motivation for both courses. Here's why it's accurate at that point in the story:
-
-**In CS 463:** Lab 5 (Week 7) deploys a Lambda + API Gateway. The simplest working function returns a hardcoded JSON response — that's the starting point. Two weeks later (Week 9 / Lab 7), Janet's complaint is the trigger for adding DynamoDB. The student literally has a function they wrote in Lab 5 that returns `{"status": "ok"}` with a hardcoded string.
-
-**In CS 545:** Lab 5 (Week 5) follows the same pattern — the provided Lambda template returns structured but static JSON. The Lecture 4 (Week 4) storage discussion happens *before* Lab 5, using Janet's quote as forward-looking motivation: "This API we're about to build — as soon as it goes live, Janet will want it to store real data."
-
-So the quote works in both courses but at slightly different moments. In CS 463 it's retrospective ("you built this, now let's fix it"). In CS 545 it's prospective ("you're about to build this, think about storage from day one").
-
----
-
-## Tips for Keeping the Narrative Consistent
-
-When writing new content, check these before publishing:
-
-1. **Is the character's concern in character?** Janet = architecture/outcomes. Ben = cost/operations. Linda = reliability/security. Don't have Ben worrying about consistency models or Janet worried about the AWS bill.
-
-2. **What is NovaSpark's architecture state at this point in the course?** Use the tables above. Don't have Janet say "our Lambda function returns hardcoded data" if by that week students have already added DynamoDB.
-
-3. **Is the framing right for the course?** CS 463: "here's what you're going to build." CS 545: "here's a decision you're going to have to justify." The same NovaSpark problem should produce different student tasks in each course.
-
-4. **Does the lab deliverable connect back to the story?** The best labs have a character's question directly answered by the student's written deliverable. Linda asks "what's your RTO?" — the student writes an RTO/RPO analysis.
