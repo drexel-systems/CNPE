@@ -2,8 +2,10 @@
 ## Course Syllabus
 
 **Instructor:** Brian Mitchell, Ph.D.
+
 **Email:** bmitchell@drexel.edu
-**Department:** Computer Science, College of Computing and Informatics (CCI)
+
+**Department:** Computer Science, College of Engineering and Computing (also CCI)
 
 ---
 
