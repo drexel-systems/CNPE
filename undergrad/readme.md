@@ -16,7 +16,7 @@ An introduction to the principles, tools, and architectures used to design, buil
 
 The course follows a build-from-scratch philosophy: you will write the infrastructure code, configure the network, deploy the services, and wire everything together yourself. By the end of the term, you will have a working, cloud-deployed serverless API — built entirely through code, from a blank AWS account. Along the way, you will apply industry best practices including the use of modern Infrastructure as Code tooling — specifically **Pulumi**, a developer-first IaC platform that lets you define and provision cloud resources using standard Python rather than a proprietary configuration language.
 
-All lab work is grounded in a single running scenario: **NovaSpark Technologies**, a fictional startup where you play the role of a cloud engineer helping the team move from manual servers to a properly architected AWS environment.
+All lab work is grounded in a single running scenario: **NovaSpark Technologies**, a fictional startup where you play the role of a cloud engineer helping the team move from manual servers to a properly architected AWS environment.  Read more about  [NovaSpark Technologies Here](../novaspark/readme.md)
 
 **College/Department:** CCI, Department of Computer Science
 **Repeat Status:** Not repeatable for credit
