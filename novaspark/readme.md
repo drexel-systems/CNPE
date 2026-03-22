@@ -1,3 +1,7 @@
+|![nslogo](./NovaSpark.png)|# The NovaSpark Technologies Journey
+## A Fictitous Company used for our Cloud Journey|
+
+
 ![nslogo](./NovaSpark.png)
 # The NovaSpark Technologies Journey
 ## A Fictitous Company used for our Cloud Journey
