@@ -9,7 +9,7 @@
 
 ## Course Description
 
-An advanced graduate study of the principles, architectures, and tools used to design and operate modern cloud-native systems. Students examine the technical and organizational tradeoffs behind cloud infrastructure decisions — from networking and storage to serverless compute and distributed systems patterns — through weekly seminar discussions, hands-on configuration labs, and a substantial written architecture deliverable.
+An graduate-focused study of the principles, architectures, and tools used to design and operate modern cloud-native systems. Students examine the technical and organizational tradeoffs behind cloud infrastructure decisions — from networking and storage to serverless compute and distributed systems patterns — through weekly seminar discussions, hands-on configuration labs, and a substantial written architecture deliverable.
 
 This course is the graduate counterpart to an undergraduate offering in cloud platform engineering. Where the undergraduate version emphasizes hands-on construction — writing infrastructure code, deploying services, and building functioning systems from scratch — CS 545 shifts the emphasis to **architectural investigation, critical evaluation, and written justification**. Students engage directly with primary literature from industry and academia, examine the broader impacts of cloud computing on how modern software systems are designed and operated, and develop the reasoning skills expected of engineers, architects, and technical leads.
 
