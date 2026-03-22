@@ -1,6 +1,3 @@
-|![nslogo](./NovaSpark.png)| #The NovaSpark Technologies Journey ## A Fictitous Company used for our Cloud Journey|
-
-
 ![nslogo](./NovaSpark.png)
 # The NovaSpark Technologies Journey
 ## A Fictitous Company used for our Cloud Journey
@@ -19,15 +16,14 @@
 | **Ben** | Engineering Manager | Delivery, cost, and operations. "Will this break at 3am, and how much will it cost?" He's the one who has to explain the AWS bill to Janet and keep the team from over-engineering. |
 | **Linda** | SRE / Senior Engineer | Reliability, security, and operational correctness. "Who gets paged when this breaks?" She pushes back on anything that isn't production-grade. Often the voice that introduces failure modes and security concerns. |
 
-The student is never named — they're "you." This keeps the narrative personal.
+The student is never named — they're "you." 
 
 ---
 
 ## NovaSpark Internal Asset Naming — Dragon Theme
 
-NovaSpark's internal tools, services, and infrastructure assets use dragon-themed names as a subtle nod to Drexel's mascot. These are easter eggs for students who notice them — they don't affect the technical narrative but add a layer of character to the company. The company name stays **NovaSpark** (professional, portable, credible); the dragon theme lives inside it.
+NovaSpark's internal tools, services, and infrastructure assets use dragon-themed names as a subtle nod to Drexel's mascot. 
 
-**Naming convention:** Draw from dragon mythology — names of famous dragons, dragon-related terms, or fire/scale/flight vocabulary. Keep names short and plausible as real internal tool names.
 
 | Asset type | Name | Notes |
 |------------|------|-------|
@@ -39,9 +35,8 @@ NovaSpark's internal tools, services, and infrastructure assets use dragon-theme
 | Staging environment | **Wyvern** | NovaSpark's pre-production environment |
 | Load testing tool | **Scorch** | Used in the serverless performance analysis lab |
 
-**Usage guidance:** Drop these names into lab narratives and lecture examples where a concrete tool name makes the scenario feel more real. For example: *"Linda checks Draken and sees the API latency spike started at 09:03."* Don't force them — only use when a name adds color, not when it distracts.
 
-**Reserved / not yet assigned:** Fafnir, Nidhogg, Vermithrax, Cinder, Talon, Gale — available for future services or project options.
+**Reserved / not yet assigned:** Fafnir, Nidhogg, Vermithrax, Cinder, Talon, Gale — available for future services or project options that can support your coursework.
 
 ---
 
