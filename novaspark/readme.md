@@ -58,7 +58,7 @@ Both courses arrive at this architecture — undergrad by building it piece by p
 
 ---
 
-## The Story in Plain English
+## The NovaSpark Cloud Journey Objective
 
 **The problem NovaSpark has at the start of the course:** The company is growing and needs real cloud infrastructure. Right now, things are running on rented servers (or nothing at all). Janet wants to move to AWS properly — not just lift-and-shift, but build things the right way from day one.
 
@@ -74,7 +74,7 @@ Both courses arrive at this architecture — undergrad by building it piece by p
 
 ---
 
-## CS 463 — Week by Week
+## Undergrad — Week by Week
 
 | Week | What NovaSpark needs | Who says it | What students build | Architecture state after lab |
 |------|---------------------|-------------|---------------------|------------------------------|
@@ -92,7 +92,7 @@ Both courses arrive at this architecture — undergrad by building it piece by p
 
 ---
 
-## CS 545 — Week by Week
+## Graduate — Week by Week
 
 | Week | What NovaSpark needs | Who says it | What students do | Architecture / ADD state after lab |
 |------|---------------------|-------------|------------------|-----------------------------------|
