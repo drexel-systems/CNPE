@@ -75,6 +75,11 @@ sec_group = aws.ec2.SecurityGroup(
 # The EC2 instance will read from S3 via its IAM role — not via public URL.
 # This is the secure pattern: never expose a bucket publicly unless required.
 #
+# SDK Docs:
+#   BucketV2:               https://www.pulumi.com/registry/packages/aws/api-docs/s3/bucketv2/
+#   BucketPublicAccessBlock: https://www.pulumi.com/registry/packages/aws/api-docs/s3/bucketpublicaccessblock/
+#   → Click the Python tab → read the Args section for each
+#
 # Hint: aws.s3.BucketV2(...) and aws.s3.BucketPublicAccessBlock(...)
 # ---------------------------------------------------------------------------
 
@@ -114,6 +119,10 @@ assume_role_policy = json.dumps({
 # The trust policy is already written for you. Your job is to create the
 # Role resource that uses it.
 #
+# SDK Docs: https://www.pulumi.com/registry/packages/aws/api-docs/iam/role/
+#   → Click the Python tab → the assume_role_policy argument is what connects
+#     the trust policy above to this resource
+#
 # Hint: aws.iam.Role("ec2-s3-read-role", assume_role_policy=assume_role_policy, ...)
 # ---------------------------------------------------------------------------
 
@@ -122,6 +131,9 @@ assume_role_policy = json.dumps({
 
 # ---------------------------------------------------------------------------
 # TODO 3: Attach a Permission Policy to the Role
+#
+# SDK Docs: https://www.pulumi.com/registry/packages/aws/api-docs/iam/rolepolicy/
+#   → Click the Python tab → note how policy expects a JSON string, not a dict
 #
 # Now define WHAT the role can do. Grant read-only access to your S3 bucket.
 #
@@ -166,6 +178,9 @@ assume_role_policy = json.dumps({
 # EC2 requires an Instance Profile — a wrapper that holds exactly one role.
 # Think of it as the ID badge that lets the role "walk through the door."
 #
+# SDK Docs: https://www.pulumi.com/registry/packages/aws/api-docs/iam/instanceprofile/
+#   → Click the Python tab → note the role argument takes role.name, not role.id
+#
 # Hint: aws.iam.InstanceProfile("ec2-instance-profile", role=role.name, ...)
 # ---------------------------------------------------------------------------
 
@@ -177,6 +192,9 @@ assume_role_policy = json.dumps({
 #
 # Same as Part 1, with one addition: attach the instance profile.
 # Use iam_instance_profile=instance_profile.name on the Instance resource.
+#
+# SDK Docs: https://www.pulumi.com/registry/packages/aws/api-docs/ec2/instance/
+#   → Search for iam_instance_profile in the Args section
 #
 # This single line is what transforms the instance from "no AWS access"
 # to "gets temporary, scoped credentials automatically."

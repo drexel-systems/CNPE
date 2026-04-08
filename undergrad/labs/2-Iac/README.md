@@ -40,6 +40,39 @@ The goal isn't just to get the code running — it's to understand why it's writ
 
 ---
 
+## Using the Pulumi Registry
+
+The TODOs in this lab ask you to write Pulumi resource definitions. You are not expected to memorize argument names — real engineers look them up every time they use an unfamiliar resource. The **Pulumi Registry** is where you do that, and learning to navigate it is part of the point of this lab.
+
+**Base URL:** `https://www.pulumi.com/registry/packages/aws/api-docs/`
+
+Every AWS resource has a dedicated page. To find one, append the service and resource name in lowercase:
+
+| Resource you need | Registry path |
+|---|---|
+| `aws.ec2.SecurityGroup` | `ec2/securitygroup/` |
+| `aws.ec2.Instance` | `ec2/instance/` |
+| `aws.s3.BucketV2` | `s3/bucketv2/` |
+| `aws.s3.BucketPublicAccessBlock` | `s3/bucketpublicaccessblock/` |
+| `aws.iam.Role` | `iam/role/` |
+| `aws.iam.RolePolicy` | `iam/rolepolicy/` |
+| `aws.iam.InstanceProfile` | `iam/instanceprofile/` |
+
+**How to read a registry page — four steps:**
+
+1. Open the URL for the resource you need
+2. Click the **Python** tab near the top of the page — the default view shows Terraform HCL syntax which will not work here
+3. Scroll to the **Args** section — this lists every argument the resource accepts, whether it is required or optional, and what type it expects
+4. Check the **Example Usage** section near the top for a working Python snippet you can adapt directly
+
+**Worked example — finding how to write a SecurityGroup:**
+
+Go to `https://www.pulumi.com/registry/packages/aws/api-docs/ec2/securitygroup/`, click Python, and read the Args section. You will find `ingress` listed as a sequence of `SecurityGroupIngressArgs`. Click that type and you will see its fields: `protocol`, `from_port`, `to_port`, `cidr_blocks` — exactly what TODO 1 in Part 1 asks you to fill in.
+
+Each TODO comment in the code includes the direct registry link for that specific resource. Open it, read the Args, and write the code.
+
+---
+
 ## Deliverables Summary
 
 Submit a **single PDF** named `LastName_FirstName_Lab2.pdf`. Capture screenshots as you work — don't recreate them after the fact.

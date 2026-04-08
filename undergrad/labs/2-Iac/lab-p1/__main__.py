@@ -40,6 +40,9 @@ ami = aws.ec2.get_ami(
 #   - Inbound TCP on port 22 from anywhere (SSH)
 #   - Inbound TCP on port 8080 from anywhere (web server)
 #
+# SDK Docs: https://www.pulumi.com/registry/packages/aws/api-docs/ec2/securitygroup/
+#   → Click the Python tab → read the Args section → look at ingress
+#
 # Hint: use aws.ec2.SecurityGroup(...)
 #   ingress is a list of dicts with keys:
 #     protocol, from_port, to_port, cidr_blocks, description
@@ -60,6 +63,9 @@ ami = aws.ec2.get_ami(
 #   - ami: use ami.id from the lookup above
 #   - vpc_security_group_ids: attach your security group from TODO 1
 #   - key_name: 'vockey'  (the pre-created key pair in your Learner Lab)
+#
+# SDK Docs: https://www.pulumi.com/registry/packages/aws/api-docs/ec2/instance/
+#   → Click the Python tab → read the Args section
 #
 # Hint: use aws.ec2.Instance(...)
 # Why t4g.micro? The 'g' in t4g = Graviton (ARM). Using a t3.micro (x86)
