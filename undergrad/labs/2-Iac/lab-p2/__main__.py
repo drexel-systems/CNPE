@@ -84,36 +84,76 @@ sec_group = aws.ec2.SecurityGroup(
 
 
 # ---------------------------------------------------------------------------
-# TODO 2: Create an IAM Role
+# PROVIDED: IAM Trust Policy — defines WHO can assume this role
 #
-# An IAM Role is a set of permissions that can be *assumed* by an AWS service.
-# You need to define WHO can assume this role (an assume_role_policy).
+# Every IAM role has two parts:
+#   1. A trust policy: WHO is allowed to assume (use) this role
+#   2. A permission policy: WHAT the role is allowed to do (TODO 3)
 #
-# The assume_role_policy is a JSON document. The Principal should be
-# the EC2 service: {"Service": "ec2.amazonaws.com"}
-# The Action should be: "sts:AssumeRole"
+# This trust policy says: "The EC2 service is allowed to assume this role."
+# AWS requires this exact JSON structure — the Version, Statement, Effect,
+# Principal, and Action fields are all mandatory. Don't change this.
 #
-# Hint: json.dumps({...}) to serialize the policy
-#       aws.iam.Role("ec2-s3-read-role", assume_role_policy=..., ...)
+# "sts:AssumeRole" is the AWS action that lets a service "put on" a role
+# and get temporary credentials. Without this, EC2 can't use the role at all.
+# ---------------------------------------------------------------------------
+assume_role_policy = json.dumps({
+    "Version": "2012-10-17",
+    "Statement": [{
+        "Effect": "Allow",
+        "Principal": {
+            "Service": "ec2.amazonaws.com"  # Only EC2 instances can assume this role
+        },
+        "Action": "sts:AssumeRole"
+    }]
+})
+
+# ---------------------------------------------------------------------------
+# TODO 2: Create the IAM Role using the trust policy above
+#
+# The trust policy is already written for you. Your job is to create the
+# Role resource that uses it.
+#
+# Hint: aws.iam.Role("ec2-s3-read-role", assume_role_policy=assume_role_policy, ...)
 # ---------------------------------------------------------------------------
 
-# assume_role_policy = json.dumps({...})   # <-- complete this
-# role = aws.iam.Role(...)                 # <-- uncomment and complete this
+# role = aws.iam.Role(...)   # <-- uncomment and complete this
 
 
 # ---------------------------------------------------------------------------
-# TODO 3: Attach a Policy to the Role
+# TODO 3: Attach a Permission Policy to the Role
 #
-# Define WHAT the role can do. Grant it:
-#   - s3:ListBucket on the bucket ARN (format: arn:aws:s3:::bucket-name)
-#   - s3:GetObject on all objects in the bucket (format: arn:aws:s3:::bucket-name/*)
+# Now define WHAT the role can do. Grant read-only access to your S3 bucket.
 #
-# Scope this to YOUR bucket only — not all of S3. This is "least privilege."
-# Note: do NOT grant s3:PutObject or s3:DeleteObject — read-only.
+# AWS S3 ARN format — two shapes, both required:
+#   arn:aws:s3:::bucket-name        ← the bucket itself   (needed for ListBucket)
+#   arn:aws:s3:::bucket-name/*      ← objects inside it   (needed for GetObject)
 #
-# Hint: aws.iam.RolePolicy(..., role=role.id, policy=bucket.id.apply(lambda name: json.dumps({...})))
-# The .apply() pattern lets you use the bucket's actual name (known only after deploy)
-# inside the policy JSON.
+# The bucket name isn't known until Pulumi creates the bucket, so we use
+# .apply() to build the policy string once the real name is available.
+# Here is the exact structure to follow — fill in the Resource values:
+#
+#   role_policy = aws.iam.RolePolicy(
+#       "ec2-s3-read-policy",
+#       role=role.id,
+#       policy=bucket.id.apply(lambda name: json.dumps({
+#           "Version": "2012-10-17",
+#           "Statement": [
+#               {
+#                   "Effect": "Allow",
+#                   "Action": "s3:ListBucket",
+#                   "Resource": f"arn:aws:s3:::{name}",      # ← bucket itself
+#               },
+#               {
+#                   "Effect": "Allow",
+#                   "Action": "s3:GetObject",
+#                   "Resource": f"arn:aws:s3:::{name}/*",    # ← objects inside
+#               },
+#           ],
+#       }))
+#   )
+#
+# Do NOT add s3:PutObject or s3:DeleteObject — read-only is all we need.
 # ---------------------------------------------------------------------------
 
 # role_policy = aws.iam.RolePolicy(...)   # <-- uncomment and complete this

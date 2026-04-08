@@ -160,17 +160,98 @@ sec_group = aws.ec2.SecurityGroup(
 # real bucket name is available.
 # ---------------------------------------------------------------------------
 def make_user_data(bucket_name: str) -> str:
-    # Read the web server script from the local project directory
+    # Read the web server script from the local project directory.
+    # server_script will be the full contents of s3_webserver.py as a string.
     script_path = os.path.join(os.path.dirname(__file__), "s3_webserver.py")
     with open(script_path, "r") as f:
         server_script = f.read()
 
-    # TODO: Build and return a bash script string that does the 4 steps above.
-    # Use an f-string so you can substitute bucket_name and server_script.
-    # Hint: use heredocs (cat > /path/to/file << 'EOF' ... EOF) to write
-    # multi-line files inside a bash script.
+    # ---------------------------------------------------------------------------
+    # TODO: Complete the bash script below by filling in the four marked sections.
+    #
+    # This is a Python f-string — anything inside {curly braces} gets substituted
+    # before the script runs. bucket_name and server_script are available to you.
+    #
+    # HEREDOC QUOTING RULES (important — read before you write):
+    #
+    #   cat > /path/to/file << 'EOF'    ← quoted 'EOF': bash does NOT expand $ variables
+    #   ...file contents...              Use this when writing Python code to disk,
+    #   EOF                              because Python uses $ and {} that bash would mangle.
+    #
+    #   cat > /path/to/file << EOF      ← unquoted EOF: bash DOES expand $ variables
+    #   ...file contents...              Use this when you WANT a value like {bucket_name}
+    #   EOF                              to be substituted into the file.
+    #
+    # SYSTEMD SERVICE UNIT FORMAT:
+    # A systemd unit file is a plain text file with three sections.
+    # Copy this structure exactly — systemd requires this format:
+    #
+    #   [Unit]
+    #   Description=NovaSpark Web Server
+    #   After=network.target
+    #
+    #   [Service]
+    #   Environment=S3_BUCKET_NAME=<the actual bucket name goes here>
+    #   ExecStart=/usr/bin/python3 /home/ec2-user/s3_webserver.py
+    #   Restart=always
+    #   User=ec2-user
+    #
+    #   [Install]
+    #   WantedBy=multi-user.target
+    #
+    # The Environment= line is how the bucket name reaches your Python script.
+    # s3_webserver.py reads it with: os.environ.get("S3_BUCKET_NAME")
+    # ---------------------------------------------------------------------------
 
-    raise NotImplementedError("Complete the make_user_data function")
+    return f"""#!/bin/bash
+exec > >(tee /var/log/user-data.log) 2>&1
+echo "=== NovaSpark Bootstrap Starting ==="
+echo "Bucket: {bucket_name}"
+
+# ---------------------------------------------------------------------------
+# Step 1: Install python3-pip and boto3
+# TODO: add the install commands here.
+# Use: dnf update -y && dnf install -y python3-pip && pip3 install boto3
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Step 2: Write s3_webserver.py to /home/ec2-user/s3_webserver.py
+# TODO: use a heredoc to write the server_script variable to disk.
+# Use << 'EOF' (quoted) so bash doesn't try to interpret the Python code.
+# The file content is already in the server_script variable above.
+#
+# Structure:
+#   cat > /home/ec2-user/s3_webserver.py << 'EOF'
+#   {{server_script}}
+#   EOF
+#
+# Note: in an f-string, use {{server_script}} to write a literal {server_script}
+# substitution, or just {server_script} directly — your choice.
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Step 3: Write the systemd service unit file
+# TODO: use a heredoc to write the service file to
+#       /etc/systemd/system/novaspark-web.service
+# Use << EOF (unquoted) so that {bucket_name} gets substituted into the file.
+# Follow the systemd format shown in the comments above exactly.
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Step 4: Enable and start the service
+# TODO: run these three commands in order:
+#   systemctl daemon-reload
+#   systemctl enable novaspark-web.service
+#   systemctl start novaspark-web.service
+# ---------------------------------------------------------------------------
+
+
+echo "=== NovaSpark Bootstrap Complete ==="
+echo "Web server started. Check: systemctl status novaspark-web"
+"""
 
 
 # ---------------------------------------------------------------------------
