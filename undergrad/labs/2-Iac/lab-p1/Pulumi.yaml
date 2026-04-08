@@ -1,0 +1,11 @@
+name: ec2-lab
+description: Setup EC2 instance
+runtime:
+  name: python
+  options:
+    toolchain: pip
+    virtualenv: venv
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: aws-python

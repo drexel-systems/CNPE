@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaSpark Technologies</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        header {
+            background: #1e293b;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #6366f1;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        header .logo { font-size: 1.4rem; font-weight: 800; color: #6366f1; letter-spacing: 0.05em; }
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        nav a:hover { color: #6366f1; }
+
+        .hero {
+            text-align: center;
+            padding: 6rem 2rem 5rem;
+            background: linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        }
+        .hero .eyebrow {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 span { color: #6366f1; }
+        .hero p {
+            font-size: 1.15rem;
+            color: #94a3b8;
+            max-width: 580px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover { background: #4f46e5; }
+        .btn-secondary {
+            background: transparent;
+            color: #94a3b8;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 1px solid #334155;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .btn-secondary:hover { border-color: #6366f1; color: #e2e8f0; }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            padding: 2.5rem;
+            background: #1e293b;
+            border-top: 1px solid #334155;
+            border-bottom: 1px solid #334155;
+            flex-wrap: wrap;
+        }
+        .stat { text-align: center; }
+        .stat .number { font-size: 2rem; font-weight: 800; color: #6366f1; }
+        .stat .label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.2rem; }
+
+        .features {
+            padding: 5rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .features .section-title {
+            text-align: center;
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+        .features .section-sub {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 3rem;
+            font-size: 1rem;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 2rem;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .card:hover { border-color: #6366f1; transform: translateY(-2px); }
+        .card .icon { font-size: 2rem; margin-bottom: 1rem; }
+        .card h3 { font-size: 1.05rem; color: #f1f5f9; margin-bottom: 0.5rem; }
+        .card p { color: #64748b; font-size: 0.9rem; line-height: 1.7; }
+
+        .cta {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .cta h2 { font-size: 2rem; margin-bottom: 1rem; }
+        .cta p { color: #c7d2fe; margin-bottom: 2rem; }
+        .cta a {
+            background: white;
+            color: #4f46e5;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        footer {
+            background: #1e293b;
+            text-align: center;
+            padding: 2rem;
+            color: #475569;
+            font-size: 0.8rem;
+            border-top: 1px solid #334155;
+        }
+        footer .deploy-badge {
+            display: inline-block;
+            margin-top: 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">⚡ NovaSpark</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="eyebrow">Now Hiring Cloud Engineers</div>
+        <h1>Cloud Infrastructure,<br><span>Automated.</span></h1>
+        <p>We help engineering teams build, deploy, and scale cloud-native systems — faster, safer, and with dramatically less toil.</p>
+        <div class="hero-buttons">
+            <a href="about.html" class="btn-primary">Meet the Team</a>
+            <a href="#features" class="btn-secondary">See How We Work</a>
+        </div>
+    </section>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="number">99.9%</div>
+            <div class="label">Uptime SLA</div>
+        </div>
+        <div class="stat">
+            <div class="number">&lt; 5 min</div>
+            <div class="label">Deploy Time</div>
+        </div>
+        <div class="stat">
+            <div class="number">0</div>
+            <div class="label">Hard-Coded Credentials</div>
+        </div>
+        <div class="stat">
+            <div class="number">100%</div>
+            <div class="label">Infrastructure as Code</div>
+        </div>
+    </div>
+
+    <section class="features" id="features">
+        <div class="section-title">How We Build</div>
+        <div class="section-sub">Every system we ship follows these principles</div>
+        <div class="cards">
+            <div class="card">
+                <div class="icon">⚙️</div>
+                <h3>Infrastructure as Code</h3>
+                <p>Every resource — EC2 instances, S3 buckets, IAM roles — is defined in version-controlled Python. No snowflake servers. No "I don't know who created that."</p>
+            </div>
+            <div class="card">
+                <div class="icon">🔒</div>
+                <h3>Security by Default</h3>
+                <p>Zero standing credentials. IAM roles and temporary tokens are baked into every deployment. Our EC2 instances never hold long-lived access keys.</p>
+            </div>
+            <div class="card">
+                <div class="icon">📦</div>
+                <h3>Compute &amp; Storage Separation</h3>
+                <p>Servers handle logic; S3 handles data. If an instance goes down, the content is still there — because it was never stored on the instance in the first place.</p>
+            </div>
+            <div class="card">
+                <div class="icon">🔁</div>
+                <h3>Fully Reproducible</h3>
+                <p>Any engineer can clone our repo and run <code style="background:#0f172a;padding:0.1rem 0.3rem;border-radius:4px;color:#818cf8">pulumi up</code> to get a perfect copy of any environment. Dev, staging, prod — all identical.</p>
+            </div>
+            <div class="card">
+                <div class="icon">📈</div>
+                <h3>Built to Scale</h3>
+                <p>What works for one EC2 instance works for one hundred. Our patterns are designed for scale from day one — not retrofitted when things get busy.</p>
+            </div>
+            <div class="card">
+                <div class="icon">🧹</div>
+                <h3>Clean Teardown</h3>
+                <p>Destroying an environment is as easy as creating one. <code style="background:#0f172a;padding:0.1rem 0.3rem;border-radius:4px;color:#818cf8">pulumi destroy</code> cleans everything up — no orphaned resources, no surprise bills.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <h2>Your infrastructure should work for you.</h2>
+        <p>Not the other way around.</p>
+        <a href="about.html">Meet the team building it →</a>
+    </section>
+
+    <footer>
+        <p>© 2026 NovaSpark Technologies</p>
+        <span class="deploy-badge">⚡ Deployed on AWS · Automated with Pulumi · Served from S3</span>
+    </footer>
+
+</body>
+</html>

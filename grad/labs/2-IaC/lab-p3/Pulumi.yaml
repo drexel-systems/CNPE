@@ -1,0 +1,11 @@
+name: novaspark-automated
+description: Lab 2 Part 3 — Fully automated NovaSpark deployment (EC2 + S3 + IAM + user_data)
+runtime:
+  name: python
+  options:
+    toolchain: pip
+    virtualenv: venv
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: aws-python

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — NovaSpark Technologies</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        header {
+            background: #1e293b;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #6366f1;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        header .logo { font-size: 1.4rem; font-weight: 800; color: #6366f1; letter-spacing: 0.05em; }
+        nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        nav a:hover { color: #6366f1; }
+
+        .page-header {
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+            background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+            border-bottom: 1px solid #334155;
+        }
+        .page-header h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.75rem; }
+        .page-header p { color: #64748b; font-size: 1.05rem; }
+
+        .section {
+            padding: 3.5rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .section h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #818cf8;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section p {
+            color: #94a3b8;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            font-size: 0.98rem;
+        }
+        .section p:last-child { margin-bottom: 0; }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #1e293b;
+            margin: 0;
+        }
+
+        .values {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .value-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+        .value-card .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .value-card h3 { font-size: 0.9rem; color: #f1f5f9; margin-bottom: 0.4rem; }
+        .value-card p { color: #475569; font-size: 0.82rem; line-height: 1.6; }
+
+        .team-section {
+            background: #0a0f1e;
+            padding: 4rem 2rem;
+            border-top: 1px solid #1e293b;
+            border-bottom: 1px solid #1e293b;
+        }
+        .team-section h2 {
+            text-align: center;
+            font-size: 1.7rem;
+            margin-bottom: 0.5rem;
+        }
+        .team-section .sub {
+            text-align: center;
+            color: #475569;
+            margin-bottom: 2.5rem;
+            font-size: 0.9rem;
+        }
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .member {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+        .member:hover { border-color: #6366f1; }
+        .avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.9rem;
+            margin: 0 auto 1rem;
+        }
+        .member h3 { color: #f1f5f9; font-size: 1rem; margin-bottom: 0.2rem; }
+        .member .role {
+            color: #6366f1;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+        .member p { color: #475569; font-size: 0.83rem; line-height: 1.6; }
+        .member .quote {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #334155;
+            color: #334155;
+            font-size: 0.78rem;
+            font-style: italic;
+        }
+
+        footer {
+            background: #1e293b;
+            text-align: center;
+            padding: 2rem;
+            color: #475569;
+            font-size: 0.8rem;
+            border-top: 1px solid #334155;
+        }
+        footer .deploy-badge {
+            display: inline-block;
+            margin-top: 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">⚡ NovaSpark</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        <h1>About NovaSpark</h1>
+        <p>Building the future of cloud engineering, one deployment at a time.</p>
+    </div>
+
+    <div class="section">
+        <h2>🌱 Our Story</h2>
+        <p>NovaSpark was founded in 2024 by a team of platform engineers who were tired of watching great software get stuck in slow, brittle deployment pipelines. We'd all been at companies where "just deploy it" meant a 2-hour Confluence doc, a Slack message to three different teams, and a prayer to the oncall gods.</p>
+        <p>We decided there had to be a better way. Our whole platform is defined in code, reviewed in pull requests, and deployed in minutes. We practice what we preach — every resource in our stack is version-controlled, reproducible, and destroyable with a single command.</p>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+        <h2>🏗️ How We Build</h2>
+        <p>We're an AWS-first shop that takes Infrastructure as Code seriously. Every EC2 instance, S3 bucket, and IAM role is defined in Pulumi — not clicked into existence in the AWS Console and forgotten about.</p>
+        <p>Security is baked in from the start: our EC2 instances authenticate to AWS services using IAM roles with temporary, auto-rotating credentials. There are zero hard-coded access keys in our codebase. Zero. If you find one, you get a free lunch.</p>
+        <div class="values">
+            <div class="value-card">
+                <div class="icon">📋</div>
+                <h3>Code Review Everything</h3>
+                <p>Infrastructure changes go through PRs just like application code.</p>
+            </div>
+            <div class="value-card">
+                <div class="icon">🔐</div>
+                <h3>Least Privilege Always</h3>
+                <p>Every role does exactly what it needs to — nothing more.</p>
+            </div>
+            <div class="value-card">
+                <div class="icon">💥</div>
+                <h3>Embrace Immutability</h3>
+                <p>Don't patch servers. Replace them. Everything is reproducible.</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="team-section">
+        <h2>The Team</h2>
+        <p class="sub">Small team, big opinions about IAM policies.</p>
+        <div class="team-grid">
+            <div class="member">
+                <div class="avatar">👩‍💻</div>
+                <h3>Janet Sharma</h3>
+                <div class="role">Founder &amp; CEO</div>
+                <p>Former AWS Solutions Architect. Believes every infrastructure change belongs in a pull request. Has never manually clicked "Create Instance" in the console.</p>
+                <div class="quote">"If it's not in git, it doesn't exist."</div>
+            </div>
+            <div class="member">
+                <div class="avatar">🧑‍💻</div>
+                <h3>Ben Chen</h3>
+                <div class="role">Head of Platform</div>
+                <p>Pulumi contributor. Has very strong opinions about IAM policy boundary conditions. Will refactor your security group before you finish your coffee.</p>
+                <div class="quote">"0.0.0.0/0 on port 22 is a personal attack."</div>
+            </div>
+            <div class="member">
+                <div class="avatar">👩‍🔬</div>
+                <h3>Linda Patel</h3>
+                <div class="role">Security Lead</div>
+                <p>Treats every S3 bucket like it's public until proven otherwise. Reads IAM docs for fun. Once found credentials in a GitHub repo and wept.</p>
+                <div class="quote">"Zero trust means zero exceptions."</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section" style="text-align: center; padding: 4rem 2rem;">
+        <p style="color: #475569; font-size: 1rem; margin-bottom: 1.5rem;">Want to join us? We're building the infrastructure that powers the next generation of cloud-native companies.</p>
+        <a href="index.html" style="color: #6366f1; text-decoration: none; font-weight: 600;">← Back to Home</a>
+    </div>
+
+    <footer>
+        <p>© 2026 NovaSpark Technologies</p>
+        <span class="deploy-badge">⚡ Deployed on AWS · Automated with Pulumi · Served from S3</span>
+    </footer>
+
+</body>
+</html>
