@@ -22,7 +22,6 @@ REMEMBER to run before deploying:
   pulumi config set aws:region us-east-1
 """
 
-import json
 import pulumi
 import pulumi_aws as aws
 
@@ -100,56 +99,11 @@ aws.s3.BucketPublicAccessBlock(
 )
 
 # ---------------------------------------------------------------------------
-# 4. IAM Role — defines WHAT can assume this role and WHAT it can do
-#
-#    Two-part setup:
-#      a) Assume Role Policy: WHO can use this role (EC2 service)
-#      b) Role Policy:        WHAT this role can do (read from our bucket)
-#
-#    This is the "right way" to grant AWS access to EC2 instances.
-#    No access keys. No secrets. Temporary credentials only.
+# 4. IAM Role — AWS Academy restricts iam:CreateRole for student accounts.
+#    Instead we look up the pre-existing 'LabRole' that AWS Academy provisions
+#    for every Learner Lab. It already has S3 access so no custom policy needed.
 # ---------------------------------------------------------------------------
-assume_role_policy = json.dumps({
-    "Version": "2012-10-17",
-    "Statement": [{
-        "Effect": "Allow",
-        "Principal": {
-            "Service": "ec2.amazonaws.com",  # Only EC2 instances can assume this role
-        },
-        "Action": "sts:AssumeRole",
-    }],
-})
-
-role = aws.iam.Role(
-    "ec2-s3-read-role",
-    assume_role_policy=assume_role_policy,
-    description="Allows EC2 to read from the NovaSpark website S3 bucket",
-    tags={"Lab": "2-Part2"},
-)
-
-# Attach a policy that grants GetObject and ListBucket on OUR bucket only.
-# This is "least privilege" — the instance can't touch other S3 buckets.
-role_policy = aws.iam.RolePolicy(
-    "ec2-s3-read-policy",
-    role=role.id,
-    policy=bucket.id.apply(
-        lambda bucket_name: json.dumps({
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Effect": "Allow",
-                    "Action": "s3:ListBucket",
-                    "Resource": f"arn:aws:s3:::{bucket_name}",
-                },
-                {
-                    "Effect": "Allow",
-                    "Action": "s3:GetObject",
-                    "Resource": f"arn:aws:s3:::{bucket_name}/*",
-                },
-            ],
-        })
-    ),
-)
+lab_role = aws.iam.get_role(name="LabRole")
 
 # ---------------------------------------------------------------------------
 # 5. IAM Instance Profile — the "adapter" that lets an EC2 instance use a role
@@ -158,8 +112,7 @@ role_policy = aws.iam.RolePolicy(
 # ---------------------------------------------------------------------------
 instance_profile = aws.iam.InstanceProfile(
     "ec2-instance-profile",
-    role=role.name,
-    tags={"Lab": "2-Part2"},
+    role=lab_role.name,
 )
 
 # ---------------------------------------------------------------------------
