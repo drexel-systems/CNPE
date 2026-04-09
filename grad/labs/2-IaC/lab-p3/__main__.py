@@ -29,7 +29,6 @@ CLEANUP:
   pulumi destroy    # Pulumi empties the bucket for you, then deletes everything
 """
 
-import json
 import os
 import pulumi
 import pulumi_aws as aws
@@ -94,49 +93,12 @@ for filename, content_type in website_files.items():
 # 4. IAM Role + Instance Profile
 #    Same pattern as Part 2, but now fully automated (no manual console clicks)
 # ---------------------------------------------------------------------------
-assume_role_policy = json.dumps({
-    "Version": "2012-10-17",
-    "Statement": [{
-        "Effect": "Allow",
-        "Principal": {"Service": "ec2.amazonaws.com"},
-        "Action": "sts:AssumeRole",
-    }],
-})
-
-role = aws.iam.Role(
-    "ec2-s3-read-role",
-    assume_role_policy=assume_role_policy,
-    description="Allows EC2 to read from the NovaSpark website S3 bucket",
-    tags={"Lab": "2-Part3", "ManagedBy": "Pulumi"},
-)
-
-# Scoped policy: only access THIS bucket — not all of S3
-role_policy = aws.iam.RolePolicy(
-    "ec2-s3-read-policy",
-    role=role.id,
-    policy=bucket.id.apply(
-        lambda bucket_name: json.dumps({
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Effect": "Allow",
-                    "Action": "s3:ListBucket",
-                    "Resource": f"arn:aws:s3:::{bucket_name}",
-                },
-                {
-                    "Effect": "Allow",
-                    "Action": "s3:GetObject",
-                    "Resource": f"arn:aws:s3:::{bucket_name}/*",
-                },
-            ],
-        })
-    ),
-)
+# AWS Academy restricts iam:CreateRole — use the pre-existing LabRole instead
+lab_role = aws.iam.get_role(name="LabRole")
 
 instance_profile = aws.iam.InstanceProfile(
     "ec2-instance-profile",
-    role=role.name,
-    tags={"Lab": "2-Part3", "ManagedBy": "Pulumi"},
+    role=lab_role.name,
 )
 
 # ---------------------------------------------------------------------------
@@ -144,7 +106,7 @@ instance_profile = aws.iam.InstanceProfile(
 # ---------------------------------------------------------------------------
 sec_group = aws.ec2.SecurityGroup(
     "novaspark-web-sg",
-    description="NovaSpark web server — SSH and port 8080",
+    description="NovaSpark web server - SSH and port 8080",
     ingress=[
         {
             "protocol": "tcp",
