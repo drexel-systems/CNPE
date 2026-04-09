@@ -17,7 +17,6 @@ Run before deploying:
   pulumi up
   # Wait ~90 seconds, then visit the websiteUrl output
 """
-import json
 import os
 import pulumi
 import pulumi_aws as aws
@@ -71,44 +70,14 @@ for filename, content_type in website_files.items():
     )
 
 # ---------------------------------------------------------------------------
-# PROVIDED: IAM Role + Instance Profile (same as Part 2)
+# PROVIDED: IAM Instance Profile
+#    AWS Academy restricts iam:CreateRole — use the pre-existing LabRole instead
 # ---------------------------------------------------------------------------
-assume_role_policy = json.dumps({
-    "Version": "2012-10-17",
-    "Statement": [{
-        "Effect": "Allow",
-        "Principal": {"Service": "ec2.amazonaws.com"},
-        "Action": "sts:AssumeRole",
-    }],
-})
-
-role = aws.iam.Role(
-    "ec2-s3-read-role",
-    assume_role_policy=assume_role_policy,
-    description="Allows EC2 to read from the NovaSpark website S3 bucket",
-    tags={"Lab": "2-Part3", "ManagedBy": "Pulumi"},
-)
-
-aws.iam.RolePolicy(
-    "ec2-s3-read-policy",
-    role=role.id,
-    policy=bucket.id.apply(
-        lambda bucket_name: json.dumps({
-            "Version": "2012-10-17",
-            "Statement": [
-                {"Effect": "Allow", "Action": "s3:ListBucket",
-                 "Resource": f"arn:aws:s3:::{bucket_name}"},
-                {"Effect": "Allow", "Action": "s3:GetObject",
-                 "Resource": f"arn:aws:s3:::{bucket_name}/*"},
-            ],
-        })
-    ),
-)
+lab_role = aws.iam.get_role(name="LabRole")
 
 instance_profile = aws.iam.InstanceProfile(
     "ec2-instance-profile",
-    role=role.name,
-    tags={"Lab": "2-Part3", "ManagedBy": "Pulumi"},
+    role=lab_role.name,
 )
 
 # ---------------------------------------------------------------------------

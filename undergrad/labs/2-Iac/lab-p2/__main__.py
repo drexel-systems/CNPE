@@ -4,20 +4,17 @@ Lab 2 — Part 2: S3, IAM, and the Right Way to Handle Credentials
 Your task: complete the TODOs below to add an S3 bucket and IAM role
 so the EC2 instance can access S3 using temporary credentials.
 
-The AMI lookup and security group are provided (same as Part 1).
+The AMI lookup, security group, and IAM role lookup are provided.
 You need to write:
   1. An S3 bucket to store website content
-  2. An IAM Role that allows EC2 to assume it
-  3. An IAM Role Policy granting read access to your bucket
-  4. An IAM Instance Profile (wraps the role for attachment to EC2)
-  5. An EC2 Instance with the instance profile attached
+  2. An IAM Instance Profile (wraps the pre-existing LabRole for attachment to EC2)
+  3. An EC2 Instance with the instance profile attached
 
 Run before deploying:
   pulumi config set aws:region us-east-1
   pulumi preview
   pulumi up
 """
-import json
 import pulumi
 import pulumi_aws as aws
 
@@ -89,90 +86,23 @@ sec_group = aws.ec2.SecurityGroup(
 
 
 # ---------------------------------------------------------------------------
-# PROVIDED: IAM Trust Policy — defines WHO can assume this role
+# PROVIDED: IAM Role lookup
 #
-# Every IAM role has two parts:
-#   1. A trust policy: WHO is allowed to assume (use) this role
-#   2. A permission policy: WHAT the role is allowed to do (TODO 3)
+# AWS Academy does not allow students to create new IAM Roles (iam:CreateRole
+# is restricted by the Learner Lab policy). Instead, every AWS Academy account
+# comes with a pre-existing role called "LabRole" that already has S3 access.
 #
-# This trust policy says: "The EC2 service is allowed to assume this role."
-# AWS requires this exact JSON structure — the Version, Statement, Effect,
-# Principal, and Action fields are all mandatory. Don't change this.
+# We look it up using get_role() — a read-only data source that finds an
+# existing role by name without creating anything.
 #
-# "sts:AssumeRole" is the AWS action that lets a service "put on" a role
-# and get temporary credentials. Without this, EC2 can't use the role at all.
+# In a real AWS account (outside Academy), you would instead create the role:
+#   role = aws.iam.Role("ec2-s3-read-role", assume_role_policy=json.dumps({...}))
 # ---------------------------------------------------------------------------
-assume_role_policy = json.dumps({
-    "Version": "2012-10-17",
-    "Statement": [{
-        "Effect": "Allow",
-        "Principal": {
-            "Service": "ec2.amazonaws.com"  # Only EC2 instances can assume this role
-        },
-        "Action": "sts:AssumeRole"
-    }]
-})
-
-# ---------------------------------------------------------------------------
-# TODO 2: Create the IAM Role using the trust policy above
-#
-# The trust policy is already written for you. Your job is to create the
-# Role resource that uses it.
-#
-# SDK Docs: https://www.pulumi.com/registry/packages/aws/api-docs/iam/role/
-#   → Click the Python tab → the assume_role_policy argument is what connects
-#     the trust policy above to this resource
-#
-# Hint: aws.iam.Role("ec2-s3-read-role", assume_role_policy=assume_role_policy, ...)
-# ---------------------------------------------------------------------------
-
-# role = aws.iam.Role(...)   # <-- uncomment and complete this
+lab_role = aws.iam.get_role(name="LabRole")
 
 
 # ---------------------------------------------------------------------------
-# TODO 3: Attach a Permission Policy to the Role
-#
-# SDK Docs: https://www.pulumi.com/registry/packages/aws/api-docs/iam/rolepolicy/
-#   → Click the Python tab → note how policy expects a JSON string, not a dict
-#
-# Now define WHAT the role can do. Grant read-only access to your S3 bucket.
-#
-# AWS S3 ARN format — two shapes, both required:
-#   arn:aws:s3:::bucket-name        ← the bucket itself   (needed for ListBucket)
-#   arn:aws:s3:::bucket-name/*      ← objects inside it   (needed for GetObject)
-#
-# The bucket name isn't known until Pulumi creates the bucket, so we use
-# .apply() to build the policy string once the real name is available.
-# Here is the exact structure to follow — fill in the Resource values:
-#
-#   role_policy = aws.iam.RolePolicy(
-#       "ec2-s3-read-policy",
-#       role=role.id,
-#       policy=bucket.id.apply(lambda name: json.dumps({
-#           "Version": "2012-10-17",
-#           "Statement": [
-#               {
-#                   "Effect": "Allow",
-#                   "Action": "s3:ListBucket",
-#                   "Resource": f"arn:aws:s3:::{name}",      # ← bucket itself
-#               },
-#               {
-#                   "Effect": "Allow",
-#                   "Action": "s3:GetObject",
-#                   "Resource": f"arn:aws:s3:::{name}/*",    # ← objects inside
-#               },
-#           ],
-#       }))
-#   )
-#
-# Do NOT add s3:PutObject or s3:DeleteObject — read-only is all we need.
-# ---------------------------------------------------------------------------
-
-# role_policy = aws.iam.RolePolicy(...)   # <-- uncomment and complete this
-
-
-# ---------------------------------------------------------------------------
-# TODO 4: Create an IAM Instance Profile
+# TODO 2: Create an IAM Instance Profile
 #
 # You cannot attach an IAM Role directly to an EC2 instance.
 # EC2 requires an Instance Profile — a wrapper that holds exactly one role.
@@ -181,14 +111,17 @@ assume_role_policy = json.dumps({
 # SDK Docs: https://www.pulumi.com/registry/packages/aws/api-docs/iam/instanceprofile/
 #   → Click the Python tab → note the role argument takes role.name, not role.id
 #
-# Hint: aws.iam.InstanceProfile("ec2-instance-profile", role=role.name, ...)
+# Use lab_role.name (looked up above) as the role argument.
+# Do NOT add tags — AWS Academy also restricts iam:TagInstanceProfile.
+#
+# Hint: aws.iam.InstanceProfile("ec2-instance-profile", role=lab_role.name)
 # ---------------------------------------------------------------------------
 
 # instance_profile = aws.iam.InstanceProfile(...)   # <-- uncomment and complete this
 
 
 # ---------------------------------------------------------------------------
-# TODO 5: Create the EC2 Instance with the Instance Profile Attached
+# TODO 3: Create the EC2 Instance with the Instance Profile Attached
 #
 # Same as Part 1, with one addition: attach the instance profile.
 # Use iam_instance_profile=instance_profile.name on the Instance resource.
