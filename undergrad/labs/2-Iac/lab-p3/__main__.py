@@ -74,7 +74,6 @@ for filename, content_type in website_files.items():
 #    AWS Academy restricts iam:CreateRole — use the pre-existing LabRole instead
 # ---------------------------------------------------------------------------
 lab_role = aws.iam.get_role(name="LabRole")
-
 instance_profile = aws.iam.InstanceProfile(
     "ec2-instance-profile",
     role=lab_role.name,
@@ -221,7 +220,6 @@ echo "Bucket: {bucket_name}"
 echo "=== NovaSpark Bootstrap Complete ==="
 echo "Web server started. Check: systemctl status novaspark-web"
 """
-
 
 # ---------------------------------------------------------------------------
 # PROVIDED: EC2 Instance — uses your make_user_data function

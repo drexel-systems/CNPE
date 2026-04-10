@@ -161,6 +161,7 @@ The `systemd` part is important: by creating a proper service, the web server wi
 cd lab-p3/
 pulumi stack init dev
 pulumi config set aws:region us-east-1
+pulumi install              # installs pulumi-aws and other Python packages
 pulumi preview
 ```
 

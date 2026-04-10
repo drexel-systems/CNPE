@@ -1,8 +1,8 @@
 # Lab 2: Infrastructure as Code — EC2, S3, and Automated Deployments
 
 **Course:** CS545 — Cloud Native Platform Engineering (Graduate)
-**Points:** 100
-**Estimated Time:** 3–4 hours across three parts + 1 hour written analysis
+**Points:** 100 (+ up to 10 extra credit)
+**Estimated Time:** 2–3 hours (Parts 1 and 2 required); Part 3 is optional extra credit
 
 ---
 
@@ -22,12 +22,12 @@ By the end of this lab, you will be able to:
 
 You are a new engineer at **NovaSpark Technologies**. The code is complete and the infrastructure runs. Your task is to **deploy it, observe the system in depth, and justify every architectural choice** — in writing, with specifics.
 
-| Part | Directory | What You'll Do | Est. Time |
-|------|-----------|----------------|-----------|
-| **Part 1** | `lab-p1/` | Deploy EC2 with Pulumi; SSH in; observe the fragility | 30–40 min |
-| **Part 2** | `lab-p2/` | Deploy EC2 + S3 + IAM; explore credentials in depth | 50–70 min |
-| **Part 3** | `lab-p3/` | Deploy fully automated stack; trace every layer | 40–50 min |
-| **Analysis** | Written | Context paragraph + analytical deliverables | 45–60 min |
+| Part | Directory | What You'll Do | Est. Time | Required? |
+|------|-----------|----------------|-----------|-----------|
+| **Part 1** | `lab-p1/` | Deploy EC2 with Pulumi; SSH in; observe the fragility | 30–40 min | ✅ Required |
+| **Part 2** | `lab-p2/` | Deploy EC2 + S3 + IAM; explore credentials in depth | 50–70 min | ✅ Required |
+| **Part 3** | `lab-p3/` | Deploy fully automated stack; trace every layer | 40–50 min | ⭐ Extra credit (+10 pts) |
+| **Analysis** | Written | Context paragraph + analytical deliverables | 45–60 min | ✅ Required |
 
 > **Start here if this is your first time:** [`SETUP.md`](SETUP.md) — install Pulumi, configure AWS credentials, set up SSH key.
 
@@ -51,30 +51,42 @@ Your written deliverables require *specific* answers to questions like these, gr
 
 Submit a **single PDF** named `LastName_FirstName_Lab2.pdf`.
 
-### Screenshots (prove your deployment ran)
+### Required — Screenshots (40 pts)
 
 | # | Deliverable | Where | Points |
 |---|-------------|-------|--------|
 | D1 | `pulumi up` terminal — Part 1 (all 4 outputs visible) | Part 1, Step 3 | 5 |
-| D2 | Browser screenshot of website at `http://<dns>:8080` | Part 1, Step 7 | 5 |
-| D3 | `aws configure list` showing `iam-role` credential type | Part 2, Step 5 | 5 |
-| D4 | IMDSv2 curl showing `AccessKeyId` starting with `ASIA`, Token, and Expiration | Part 2, Step 5 | 10 |
+| D2 | Browser screenshot of website at `http://<dns>:8080` — Part 1 | Part 1, Step 7 | 5 |
+| D3 | `aws configure list` showing `iam-role` in the Type column | Part 2, Step 3 | 5 |
+| D4 | IMDSv2 curl output — `AccessKeyId` starting with `ASIA`, a `Token` field, and an `Expiration` timestamp | Part 2, Step 5 | 10 |
 | D5 | `aws s3 ls s3://<bucket>/` listing both HTML files | Part 2, Step 6 | 5 |
-| D9 | `pulumi up` terminal — Part 3 (9+ resources, all outputs) | Part 3, Step 4 | 5 |
-| D14 | `pulumi destroy` completion for all 3 parts (3 screenshots) | Cleanup | 5 |
+| D6 | `curl -v` terminal output showing `X-Served-From: S3` response header | Part 2, Step 8 | 5 |
+| D7 | `pulumi destroy` — Parts 1 and 2 (2 terminal screenshots, 0 errors) | Cleanup | 5 |
 | | **Screenshots subtotal** | | **40** |
 
-### Analytical Deliverables
+### Required — Analytical Deliverables (60 pts)
 
 | # | Deliverable | Length | Points |
 |---|-------------|--------|--------|
-| D6 | IAM role architecture analysis: explain the full credential chain from EC2 → IMDS → S3. Why does `X-Served-From: S3` prove the right pattern is in place? Include `curl -v` output as evidence. | 4–6 sentences | 10 |
-| D7 | Default-deny defense: explain *why* EC2 cannot access S3 by default and why this is the correct default at scale. Model the threat: what would happen to your org's data if any EC2 instance could access any S3 bucket without a role? | 4–6 sentences | 10 |
-| D8 | Credential risk analysis: for each of the following storage patterns, describe the specific failure mode and risk severity: (a) environment variables, (b) `~/.aws/credentials` on disk, (c) hardcoded in application code, (d) IAM role via IMDS. | Table or structured list | 10 |
-| D12 | Automation analysis: compare the three deployment approaches (Parts 1, 2, 3) across at least 5 dimensions. Then evaluate: what does `user_data_replace_on_change=True` guarantee about the instance, and why does that matter for a production system? | 5–7 sentences + table | 10 |
+| D8 | IAM credential chain analysis: trace the full path from EC2 → instance profile → IMDS → IAM → S3. What does each link in the chain do? Why does the `X-Served-From: S3` response header confirm the right pattern is in place? | 4–6 sentences | 15 |
+| D9 | Default-deny defense: explain *why* EC2 cannot access S3 by default and model the threat at scale — what would happen to your org's data if any EC2 instance could access any S3 bucket without an explicit role? | 4–6 sentences | 10 |
+| D10 | Credential risk analysis: for each of the following patterns, describe the specific failure mode and risk severity: (a) environment variables, (b) `~/.aws/credentials` on disk, (c) hardcoded in application code, (d) IAM role via IMDS. | Table | 10 |
+| D11 | Automation analysis: compare Part 1 (local disk) vs Part 2 (S3 + manual setup) across 5 dimensions. Then predict: what would Part 3's `user_data` eliminate, and why does eliminating manual SSH steps matter for a production environment running 50+ instances? | 5–7 sentences + table | 5 |
 | CP | **Context Paragraph:** see [`context-paragraph-prompt.md`](context-paragraph-prompt.md) | 150–250 words | 20 |
 | | **Analytical subtotal** | | **60** |
 | | **Grand Total** | | **100** |
+
+### Extra Credit — Part 3 (+10 pts)
+
+Deploy the fully automated stack and submit all four deliverables below. All four must be present for any extra credit to be awarded.
+
+| # | Deliverable | Points |
+|---|-------------|--------|
+| EC1 | `pulumi up` terminal — Part 3 (9+ resources, all outputs visible) | 3 |
+| EC2 | Browser screenshot — website live after automated deploy, no SSH used | 2 |
+| EC3 | `pulumi stack output` showing all outputs including `checkBootstrap` | 2 |
+| EC4 | Trace the bootstrap execution: what did `journalctl` show? Were there any failures or delays in the startup sequence? Name one specific thing you would change about this bootstrap design for a production environment and justify it. (4–6 sentences) | 3 |
+| | **Extra Credit Total** | | **+10** |
 
 ---
 
@@ -82,9 +94,15 @@ Submit a **single PDF** named `LastName_FirstName_Lab2.pdf`.
 
 | Deliverable Type | Full Credit | Partial Credit | No Credit |
 |-----------------|-------------|----------------|-----------|
-| **Screenshots** | Required elements visible; your own deployment | Missing a minor element | Missing, not your deployment, or recreated |
-| **Analytical (D6–D8, D12)** | Names specific AWS components; explains *why*, not just *what*; draws on what you observed in the running system | Correct at a general level but not grounded in lab specifics | Vague generalities, copied, or AI-generated without disclosure |
-| **Context Paragraph** | Connects a specific concept from the readings to a specific observation in the lab; original synthesis; meets word count | Mentions readings and lab but doesn't synthesize them | Summary of readings OR lab but not both; or under 100 words |
+| **Screenshots (D1–D7)** | All required elements visible; your own deployment | Missing a minor element (e.g., output partially cut off) | Missing, not your deployment, or recreated after the fact |
+| **Analytical (D8–D11)** | Names specific AWS components; explains *why*, not just *what*; grounded in what you observed in the running system | Correct at a general level but not grounded in lab specifics | Vague generalities, copied, or AI-generated without disclosure |
+| **Context Paragraph (CP)** | Connects a specific concept from the readings to a specific observation in the lab; original synthesis; meets word count | Mentions readings and lab but doesn't synthesize them | Summary of readings OR lab but not both; or under 100 words |
+| **Extra credit (EC1–EC4)** | All four submitted and correct | Partial — awarded only if all four are present | Missing any one EC deliverable = 0 EC awarded |
+
+**Point deductions:**
+- D4 missing a key element (no ASIA prefix, no Token, or no Expiration): −10 pts
+- Screenshot missing a minor element (D1–D3, D5–D7): −3 pts each
+- Written response uses AI without disclosure: −5 pts per response
 
 ---
 
@@ -110,7 +128,7 @@ your-course-repo/
     ├── lab-p2/
     │   └── __main__.py
     └── lab-p3/
-        └── __main__.py
+        └── __main__.py      ← optional: include if you completed Part 3 for extra credit
 ```
 
 You do not need to push config files, `.pulumi/` state, or the `website/` directory — just the `__main__.py` files.
@@ -119,7 +137,7 @@ You do not need to push config files, `.pulumi/` state, or the `website/` direct
 
 Submit **both** of the following in the Canvas Lab 2 assignment:
 
-- **Upload:** `LastName_FirstName_Lab2.pdf` — your screenshots, analytical responses, and context paragraph (D1–D14 + CP), in order with a title page
+- **Upload:** `LastName_FirstName_Lab2.pdf` — screenshots (D1–D7), analytical responses (D8–D11), and context paragraph (CP), in order with a title page; include EC1–EC4 at the end if submitting for extra credit
 - **Text entry:** Paste the URL to your `lab2/` directory in your GitHub repo
   *(Example: `https://github.com/your-org/your-repo/tree/main/lab2`)*
 

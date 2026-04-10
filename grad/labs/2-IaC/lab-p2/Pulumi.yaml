@@ -1,4 +1,4 @@
-name: ec2-lab
+name: ec2-lab-2g
 description: Setup EC2 instance
 runtime:
   name: python

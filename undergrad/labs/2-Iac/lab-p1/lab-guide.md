@@ -84,6 +84,7 @@ The `pulumi.export(...)` lines at the bottom print your SSH command and website 
 cd lab-p1/
 pulumi stack init dev
 pulumi config set aws:region us-east-1
+pulumi install              # installs pulumi-aws and other Python packages
 pulumi preview
 ```
 

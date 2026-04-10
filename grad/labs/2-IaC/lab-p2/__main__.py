@@ -3,7 +3,6 @@ Lab 2 — Part 2: EC2 + S3 + IAM Role
 -------------------------------------
 This Pulumi program builds on Part 1 by adding the AWS infrastructure
 needed to serve website content from S3:
-
   1. A Security Group          — SSH (22) and web server (8080) access
   2. An S3 Bucket              — stores the NovaSpark HTML files
   3. An IAM Role               — trusted by EC2, grants read access to the bucket
@@ -138,7 +137,6 @@ pulumi.export("publicIp", server.public_ip)
 pulumi.export("publicDns", server.public_dns)
 pulumi.export("instanceId", server.id)
 pulumi.export("bucketName", bucket.id)
-
 pulumi.export("sshCommand", server.public_dns.apply(
     lambda dns: f"ssh -i ~/.ssh/labsuser.pem ec2-user@{dns}"
 ))

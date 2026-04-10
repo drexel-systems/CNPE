@@ -61,7 +61,7 @@ aws sts get-caller-identity
 
 ## Step 1: Write the Part 2 Code — Complete the TODOs in `__main__.py`
 
-Open `lab-p2/__main__.py`. The AMI lookup and security group are provided (same as Part 1). You need to write five new pieces. Here's what each one is and why it exists:
+Open `lab-p2/__main__.py`. The AMI lookup, security group, and IAM role lookup are provided. You need to write three new pieces. Here's what each one is and why it exists:
 
 **TODO 1: S3 Bucket**
 
@@ -69,26 +69,15 @@ Create an `aws.s3.BucketV2` resource named `"novaspark-website"`. Pulumi appends
 
 Notice `force_destroy` is NOT set — you'll have to empty the bucket manually before `pulumi destroy`. This is intentional: it teaches the cleanup step.
 
-**TODO 2: IAM Role**
+> **Why not create the IAM role?** In a real AWS account you'd define a role from scratch — trust policy, permissions policy, the works. AWS Academy restricts `iam:CreateRole`, so we use a read-only data source (`aws.iam.get_role`) to look up the pre-existing `LabRole` instead. The Instance Profile, IMDS credential delivery, and everything that follows all work exactly the same way.
 
-An IAM Role is a set of permissions that can be *assumed* by an AWS service. You need to define an `assume_role_policy` — a JSON document that says WHO can assume this role. The Principal should be the EC2 service: `{"Service": "ec2.amazonaws.com"}`. The role itself does nothing until a policy is attached.
-
-**TODO 3: IAM Role Policy**
-
-Attach a policy to the role granting `s3:ListBucket` and `s3:GetObject` on your bucket only. Do NOT grant `s3:PutObject` or `s3:DeleteObject` — read-only is all the web server needs. This is "least privilege."
-
-Use `.apply()` to substitute the real bucket name into the policy ARN at deploy time:
-```python
-policy=bucket.id.apply(lambda name: json.dumps({...}))
-```
-
-**TODO 4: IAM Instance Profile**
+**TODO 2: IAM Instance Profile**
 
 Here's a detail that trips up many engineers: **you cannot attach an IAM Role directly to an EC2 instance.** EC2 requires an Instance Profile — a wrapper that holds exactly one role. Think of the role as a job description and the instance profile as the ID badge that lets someone walk through the door.
 
-Create `aws.iam.InstanceProfile("ec2-instance-profile", role=role.name, ...)`.
+Create `aws.iam.InstanceProfile("ec2-instance-profile", role=lab_role.name)`. Do NOT add tags — AWS Academy also restricts `iam:TagInstanceProfile`.
 
-**TODO 5: EC2 Instance with Profile Attached**
+**TODO 3: EC2 Instance with Profile Attached**
 
 Same as Part 1, with one addition: `iam_instance_profile=instance_profile.name`. This single line transforms the instance from "no AWS access at all" to "receives temporary, scoped credentials automatically via the metadata service."
 
@@ -100,11 +89,12 @@ Same as Part 1, with one addition: `iam_instance_profile=instance_profile.name`.
 cd lab-p2/
 pulumi stack init dev
 pulumi config set aws:region us-east-1
+pulumi install              # installs pulumi-aws and other Python packages
 pulumi preview    # review before you commit
 pulumi up
 ```
 
-You should see 7+ resources being created (more than Part 1, because of the IAM pieces and S3 bucket). Watch the dependency order — Pulumi creates the role before the instance profile, and the instance profile before the EC2 instance.
+You should see 5 resources being created: the S3 bucket, a public access block, the instance profile, the security group, and the EC2 instance. Pulumi creates the instance profile before the EC2 instance — the instance cannot start without it.
 
 Copy the outputs:
 ```
@@ -115,7 +105,13 @@ websiteUrl : "http://ec2-XX-XX-XX-XX.compute-1.amazonaws.com:8080"
 
 ---
 
-## Step 3: SSH In and Experience the Default — No Access
+## Step 3: SSH In and Verify the IAM Role Is Already Working
+
+**Before you connect, a key concept: default-deny.**
+
+AWS denies all API calls by default. No EC2 instance gets AWS access just by being in your account — every operation requires explicit authorization. This design exists for good reason: if any instance could automatically access all S3 buckets in your account, a compromised instance would give an attacker your entire data lake. At 500 instances, that's a catastrophic blast radius from a single breach.
+
+The IAM role + Instance Profile combination is how you grant access safely and precisely: the role's policy defines exactly what the instance can do, the instance profile wraps that role for EC2, and you attach it at launch. AWS's Instance Metadata Service (IMDS) then delivers temporary, scoped credentials to the instance automatically — no configuration required.
 
 Connect to your instance:
 ```bash
@@ -123,30 +119,34 @@ Connect to your instance:
 ssh -i ~/.ssh/labsuser.pem ec2-user@<your-public-dns>
 ```
 
-Now try to access S3:
-```bash
-aws s3 ls
-```
-
-You'll get one of these errors:
-```
-An error occurred (AccessDenied) when calling the ListBuckets operation: Access Denied
-```
-or
-```
-Unable to locate credentials. You can configure credentials by running "aws configure".
-```
-
-**This is expected and correct behavior.** This error exists by design — it's called *default-deny* and it's a foundational AWS security principle. Every API call to AWS requires explicit authorization. Being inside AWS doesn't automatically give you access to AWS services.
-
-This might seem frustrating, but consider the alternative: if any EC2 instance could automatically access all S3 buckets in your account, a compromised instance would have access to your entire data lake.
-
-Run this to confirm there are no credentials configured:
+Immediately check the credential source:
 ```bash
 aws configure list
 ```
 
-All values should show `None` or `not set`. Your instance has no keys, no tokens, no credentials at all — yet.
+You should see:
+```
+      Name                    Value             Type    Location
+      ----                    -----             ----    --------
+   profile                <not set>             None    None
+access_key     ****************XXXX         iam-role
+secret_key     ****************XXXX         iam-role
+    region                us-east-1      config-file    ~/.aws/config
+```
+
+**`iam-role` in the Type column.** The instance already has credentials — delivered automatically at boot by the EC2 Instance Metadata Service. You didn't configure anything. The instance profile Pulumi attached is doing the work.
+
+Confirm S3 access is live:
+```bash
+aws s3 ls
+```
+
+You should see your `novaspark-website-xxxxxxxx` bucket listed. Also run:
+```bash
+aws sts get-caller-identity
+```
+
+You're authenticated as an assumed role — not as an IAM user — which is exactly what we want.
 
 ---
 
@@ -193,8 +193,10 @@ cat ~/.aws/credentials
 ```bash
 unset AWS_ACCESS_KEY_ID
 unset AWS_SECRET_ACCESS_KEY
-aws s3 ls    # should fail again — credentials are gone
+aws s3 ls    # works again — the IMDS credentials were always in the background
 ```
+
+Notice that `aws s3 ls` succeeds immediately after the unset. The AWS CLI checks for credentials in order: environment variables → `~/.aws/credentials` → instance metadata service. Unsetting the env vars just removed the override; the IMDS credentials were there the whole time. This is exactly what makes the IAM role approach robust — it can't be accidentally disabled.
 
 The problems with hardcoded credentials, in summary:
 - Long-lived (don't expire for months/years)
@@ -205,36 +207,9 @@ The problems with hardcoded credentials, in summary:
 
 ---
 
-## Step 5: The Right Way — IAM Role (Pulumi Already Did the Work)
+## Step 5: The Right Way — Inspecting IMDS and Temporary Credentials
 
-Here's the moment of revelation. Check your credential source now:
-
-```bash
-aws configure list
-```
-
-Look at this output carefully:
-```
-      Name                    Value             Type    Location
-      ----                    -----             ----    --------
-   profile                <not set>             None    None
-access_key     ****************XXXX         iam-role
-secret_key     ****************XXXX         iam-role
-    region                us-east-1      config-file    ~/.aws/config
-```
-
-**`iam-role` as the credential type.** The instance already has credentials — but they weren't configured manually. The IAM role Pulumi attached in `lab-p2/__main__.py` is providing them automatically via the **EC2 Instance Metadata Service** (IMDS).
-
-Try S3 access now:
-```bash
-aws s3 ls
-```
-
-You should see your bucket listed. Now try your specific bucket:
-```bash
-aws s3 ls s3://$(aws s3 ls | awk '{print $3}' | grep novaspark)
-# Or replace with your actual bucket name from pulumi output
-```
+You've already verified the IAM role is working (Step 3). Now let's look under the hood at *how* the EC2 Instance Metadata Service delivers those credentials. This is the mechanism that powers every SDK and CLI call on your instance.
 
 Let's see the actual temporary credentials the metadata service is providing:
 
@@ -559,7 +534,7 @@ Check that your `.pem` file has the right permissions: `chmod 400 ~/.ssh/labsuse
 
 ## What's Next
 
-In Part 2, setting everything up took 45-60 minutes of SSH commands, manual uploads, and running scripts by hand. In **Part 3**, you'll do *all of this* with a single `pulumi up`. The entire infrastructure — bucket creation, file uploads, IAM role, server installation, service configuration — happens automatically, without you ever SSHing in.
+In Part 2, setting everything up took 45-60 minutes of SSH commands, manual uploads, and running scripts by hand. In **Part 3**, you'll do *all of this* with a single `pulumi up`. The entire infrastructure — bucket creation, file uploads, IAM instance profile, server installation, service configuration — happens automatically, without you ever SSHing in.
 
 That's the power of Infrastructure as Code taken to its logical conclusion.
 

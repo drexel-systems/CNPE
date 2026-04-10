@@ -2,7 +2,6 @@
 Lab 2 — Part 3: Fully Automated NovaSpark Deployment
 ------------------------------------------------------
 This Pulumi program automates EVERYTHING from Part 2:
-
   1. S3 Bucket              — created programmatically
   2. Website Files          — uploaded from the local website/ directory
   3. IAM Role + Profile     — created and attached automatically
@@ -92,8 +91,8 @@ for filename, content_type in website_files.items():
 # ---------------------------------------------------------------------------
 # 4. IAM Role + Instance Profile
 #    Same pattern as Part 2, but now fully automated (no manual console clicks)
+#    AWS Academy restricts iam:CreateRole — use the pre-existing LabRole instead
 # ---------------------------------------------------------------------------
-# AWS Academy restricts iam:CreateRole — use the pre-existing LabRole instead
 lab_role = aws.iam.get_role(name="LabRole")
 
 instance_profile = aws.iam.InstanceProfile(
@@ -233,7 +232,6 @@ server = aws.ec2.Instance(
 pulumi.export("publicIp", server.public_ip)
 pulumi.export("publicDns", server.public_dns)
 pulumi.export("bucketName", bucket.id)
-
 pulumi.export("websiteUrl", server.public_dns.apply(
     lambda dns: f"http://{dns}:8080"
 ))

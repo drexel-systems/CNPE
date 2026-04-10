@@ -244,7 +244,30 @@ $env:PULUMI_CONFIG_PASSPHRASE=""
 
 ---
 
-## Section 6: Final Verification Checklist
+## Section 6: Install Python Dependencies for Each Lab Part
+
+Each lab part (`lab-p1/`, `lab-p2/`, `lab-p3/`) is an independent Pulumi project with its own `requirements.txt` that lists the Python packages it needs — primarily `pulumi` and `pulumi-aws`. Before you can run any Python code, Pulumi needs to create a virtual environment and install those packages.
+
+Run this **once per lab directory**, right after `pulumi stack init dev`:
+
+```bash
+pulumi install
+```
+
+Expected output:
+```
+Installing dependencies...
+...
+Finished installing dependencies
+```
+
+This creates a `.venv/` folder inside the lab directory and installs everything from `requirements.txt` into it. You only need to run it once per directory — you don't need to repeat it when you refresh your AWS credentials at the start of a new session.
+
+> ⚠️ **Skip this and you'll see:** `ModuleNotFoundError: No module named 'pulumi_aws'` the moment `pulumi preview` tries to run your code. If you hit that error at any point, run `pulumi install` in the current lab directory and try again.
+
+---
+
+## Section 7: Final Verification Checklist
 
 Run these four commands. All four should succeed before you open any lab guide.
 
@@ -269,7 +292,7 @@ echo "PULUMI_CONFIG_PASSPHRASE is set to: '$PULUMI_CONFIG_PASSPHRASE'"
 | `pulumi whoami` | Your local machine username (not an email address) |
 | `echo $PULUMI_CONFIG_PASSPHRASE` | A blank line (correctly set to empty string) |
 
-All four passing? Open **`lab-guide-p1.md`** and start building.
+All four passing? Run `pulumi install` inside `lab-p1/`, then open **`lab-guide-p1.md`** and start building.
 
 ---
 
@@ -297,6 +320,7 @@ Tape this to your monitor:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   pulumi stack init dev
   pulumi config set aws:region us-east-1
+  pulumi install              ← installs Python packages (once per directory)
   pulumi preview              ← always preview first
   pulumi up                   ← deploy
   pulumi destroy              ← ALWAYS run before ending a lab!

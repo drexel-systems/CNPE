@@ -1,8 +1,8 @@
 # Lab 2: Infrastructure as Code — EC2, S3, and Automated Deployments
 
 **Course:** CS463 — Cloud Native Platform Engineering (Undergraduate)
-**Points:** 100
-**Estimated Time:** 3–4 hours across three parts
+**Points:** 100 (+ up to 10 extra credit)
+**Estimated Time:** 2–3 hours (Parts 1 and 2 required); Part 3 is optional extra credit
 
 ---
 
@@ -22,11 +22,11 @@ By the end of this lab, you will be able to:
 
 You are a new engineer at **NovaSpark Technologies**. Over three parts, you'll progressively automate the deployment of the company's website — starting from a fragile manual setup and ending with a fully automated, production-pattern deployment.
 
-| Part | Directory | What You'll Build | Est. Time |
-|------|-----------|-------------------|-----------|
-| **Part 1** | `lab-p1/` | Deploy EC2 with Pulumi; serve a website from local disk | 45–60 min |
-| **Part 2** | `lab-p2/` | Add S3 + IAM role; move content off the instance | 60–90 min |
-| **Part 3** | `lab-p3/` | Automate everything — no SSH required, single `pulumi up` | 45–60 min |
+| Part | Directory | What You'll Build | Est. Time | Required? |
+|------|-----------|-------------------|-----------|-----------|
+| **Part 1** | `lab-p1/` | Deploy EC2 with Pulumi; serve a website from local disk | 45–60 min | ✅ Required |
+| **Part 2** | `lab-p2/` | Add S3 + IAM role; move content off the instance | 60–90 min | ✅ Required |
+| **Part 3** | `lab-p3/` | Automate everything — no SSH required, single `pulumi up` | 45–60 min | ⭐ Extra credit (+10 pts) |
 
 > **Start here if this is your first time:** [`SETUP.md`](SETUP.md) — install Pulumi, configure AWS credentials, set up SSH key.
 
@@ -77,23 +77,32 @@ Each TODO comment in the code includes the direct registry link for that specifi
 
 Submit a **single PDF** named `LastName_FirstName_Lab2.pdf`. Capture screenshots as you work — don't recreate them after the fact.
 
+### Required (100 pts)
+
 | # | Deliverable | Where | Points |
 |---|-------------|-------|--------|
-| D1 | `pulumi up` terminal output — Part 1 (all 4 outputs visible) | Part 1, Step 3 | 5 |
-| D2 | Browser screenshot of website at `http://<dns>:8080` — Part 1 | Part 1, Step 7 | 5 |
-| D3 | `aws configure list` showing `iam-role` credential type | Part 2, Step 5 | 5 |
-| D4 | IMDSv2 curl showing `AccessKeyId` starting with `ASIA`, Token, and Expiration | Part 2, Step 5 | 10 |
-| D5 | `aws s3 ls s3://<bucket>/` listing `index.html` and `about.html` | Part 2, Step 6 | 5 |
-| D6 | `curl -v` output showing `X-Served-From: S3` response header | Part 2, Step 8 | 5 |
-| D7 | Written: Why can't EC2 access S3 by default? (3–5 sentences) | Written | 10 |
-| D8 | Written: 3 specific risks of hardcoded credentials on EC2 | Written | 10 |
-| D9 | `pulumi up` terminal — Part 3 (9+ resources, all outputs visible) | Part 3, Step 4 | 5 |
-| D10 | Browser screenshot of website after automated deploy — no SSH used | Part 3, Step 5 | 5 |
-| D11 | `pulumi stack output` showing all outputs including `checkBootstrap` | Part 3, Step 6 | 5 |
-| D12 | Written: What does `user_data` do + why it's better than SSH setup | Written | 10 |
-| D13 | Pulumi vs Terraform: comparison table (8+ dimensions) + recommendation | Written/Research | 10 |
-| D14 | `pulumi destroy` completion for all 3 parts (3 screenshots) | Cleanup | 10 |
+| D1 | `pulumi up` terminal output — Part 1 (all 4 outputs visible) | Part 1, Step 3 | 10 |
+| D2 | Browser screenshot of website at `http://<dns>:8080` — Part 1 | Part 1, Step 7 | 10 |
+| D3 | `aws configure list` showing `iam-role` in the Type column | Part 2, Step 3 | 10 |
+| D4 | IMDSv2 curl output — `AccessKeyId` starting with `ASIA`, a `Token` field, and an `Expiration` timestamp | Part 2, Step 5 | 20 |
+| D5 | `aws s3 ls s3://<bucket>/` listing `index.html` and `about.html` | Part 2, Step 6 | 10 |
+| D6 | `curl -v` output showing `X-Served-From: S3` response header | Part 2, Step 8 | 10 |
+| D7 | Written: Why can't an EC2 instance access S3 by default, and why is that a good thing? (2–3 sentences) | Written | 10 |
+| D8 | Written: Name one specific risk of storing long-lived AWS credentials on an EC2 instance, and explain how the IAM role + IMDS approach eliminates that risk. (2–3 sentences) | Written | 10 |
+| D9 | `pulumi destroy` — Parts 1 and 2 (2 terminal screenshots showing 0 errors) | Cleanup | 10 |
 | | **Total** | | **100** |
+
+### Extra Credit — Part 3 (+10 pts)
+
+Complete Part 3 to automate the full deployment with `user_data` — no SSH required. All four deliverables below must be submitted for extra credit to be awarded.
+
+| # | Deliverable | Where | Points |
+|---|-------------|-------|--------|
+| EC1 | `pulumi up` terminal — Part 3 (9+ resources, all outputs visible) | Part 3, Step 4 | 3 |
+| EC2 | Browser screenshot of website after automated deploy — no SSH used | Part 3, Step 5 | 2 |
+| EC3 | `pulumi stack output` showing all outputs including `checkBootstrap` | Part 3, Step 6 | 2 |
+| EC4 | Written: What does `user_data` do, and why is it better than SSHing in to configure a server? (2–3 sentences) | Written | 3 |
+| | **Extra Credit Total** | | **+10** |
 
 ---
 
@@ -101,14 +110,14 @@ Submit a **single PDF** named `LastName_FirstName_Lab2.pdf`. Capture screenshots
 
 | Deliverable Type | Full Credit | Partial Credit | No Credit |
 |-----------------|-------------|----------------|-----------|
-| **Screenshots** | All required elements visible; your own deployment | Missing a minor element | Missing, not your deployment, or recreated after the fact |
-| **Written: conceptual (D7, D8, D12)** | Explains *why*, names specific AWS components, uses examples from the lab | Correct but vague — describes *what* without explaining *why* | Copied, AI-generated without disclosure, or factually incorrect |
-| **Written: research (D13)** | 8+ dimensions, accurate, includes a concrete recommendation with reasoning | Fewer than 8 dimensions or no recommendation | Not present, or fewer than 4 dimensions |
-| **Cleanup (D14)** | All 3 parts destroyed, screenshots show 0 errors | 2 of 3 destroyed | 0 or 1 destroyed |
+| **Screenshots (D1–D6)** | All required elements visible; your own deployment | Missing a minor element (e.g., output partially cut off) | Missing, not your deployment, or clearly recreated after the fact |
+| **Written (D7, D8)** | Names the specific AWS mechanism, explains *why* in your own words | Correct but vague — says *what* without explaining *why* | AI-generated without disclosure, copied, or factually wrong |
+| **Cleanup (D9)** | Both parts destroyed, terminal shows 0 errors | One of two parts destroyed | Neither destroyed |
+| **Extra credit (EC1–EC4)** | All four submitted and correct | Partial — awarded only if all four are present | Missing any one EC deliverable = 0 EC awarded |
 
 **Point deductions:**
-- Missing screenshot (D1–D6, D9–D11): −3 pts each
-- Cleanup missing one part (D14): −3 pts per missing part
+- Screenshot missing a key element (D4 — no ASIA prefix, no Token, or no Expiration): −10 pts
+- Screenshot missing a minor element (D1–D3, D5–D6): −5 pts each
 - Written response uses AI without disclosure: −5 pts per response
 
 ---
@@ -129,7 +138,7 @@ your-course-repo/
     ├── lab-p2/
     │   └── __main__.py      ← your completed Part 2 code
     └── lab-p3/
-        └── __main__.py      ← your completed Part 3 code
+        └── __main__.py      ← optional: include if you completed Part 3 for extra credit
 ```
 
 You do not need to push config files, `.pulumi/` state, or the `website/` directory — just the `__main__.py` files you wrote.
@@ -138,7 +147,7 @@ You do not need to push config files, `.pulumi/` state, or the `website/` direct
 
 Submit **both** of the following in the Canvas Lab 2 assignment:
 
-- **Upload:** `LastName_FirstName_Lab2.pdf` — your screenshots and written responses, D1–D14 in order with a title page
+- **Upload:** `LastName_FirstName_Lab2.pdf` — your screenshots and written responses, D1–D9 in order with a title page; include EC1–EC4 at the end if submitting for extra credit
 - **Text entry:** Paste the URL to your `lab2/` directory in your GitHub repo
   *(Example: `https://github.com/your-org/your-repo/tree/main/lab2`)*
 

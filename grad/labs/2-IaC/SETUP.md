@@ -297,6 +297,7 @@ Tape this to your monitor:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   pulumi stack init dev
   pulumi config set aws:region us-east-1
+  pulumi install              ← installs Python packages (once per directory)
   pulumi preview              ← always preview first
   pulumi up                   ← deploy
   pulumi destroy              ← ALWAYS run before ending a lab!

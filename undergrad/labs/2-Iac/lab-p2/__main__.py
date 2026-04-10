@@ -73,7 +73,7 @@ sec_group = aws.ec2.SecurityGroup(
 # This is the secure pattern: never expose a bucket publicly unless required.
 #
 # SDK Docs:
-#   BucketV2:               https://www.pulumi.com/registry/packages/aws/api-docs/s3/bucketv2/
+#   BucketV2:                https://www.pulumi.com/registry/packages/aws/api-docs/s3/bucketv2/
 #   BucketPublicAccessBlock: https://www.pulumi.com/registry/packages/aws/api-docs/s3/bucketpublicaccessblock/
 #   → Click the Python tab → read the Args section for each
 #
@@ -99,7 +99,6 @@ sec_group = aws.ec2.SecurityGroup(
 #   role = aws.iam.Role("ec2-s3-read-role", assume_role_policy=json.dumps({...}))
 # ---------------------------------------------------------------------------
 lab_role = aws.iam.get_role(name="LabRole")
-
 
 # ---------------------------------------------------------------------------
 # TODO 2: Create an IAM Instance Profile
