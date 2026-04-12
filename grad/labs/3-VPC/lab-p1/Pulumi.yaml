@@ -1,0 +1,11 @@
+name: novaspark-vpc
+description: Lab 3 — NovaSpark production VPC with public/private subnets, IGW, NAT Gateway, bastion, and private instance
+runtime:
+  name: python
+  options:
+    toolchain: pip
+    virtualenv: venv
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: aws-python
