@@ -31,6 +31,8 @@ The focus is on building correctly with an understanding of why each piece exist
 | **Part 1** | 3 | [lab-p1/lab-guide.md](lab-p1/lab-guide.md) | Complete the TODOs, deploy VPC, explore the console, destroy at end of class | 60–75 min |
 | **Part 2** | 4 | [lab-p2/lab-guide.md](lab-p2/lab-guide.md) | Rebuild infrastructure, SSH agent forwarding, bastion hop, NAT verification, final destroy | 60–75 min |
 
+> 📌 **Tip:** Aim to finish Part 1 during the Week 3 session. Part 2 builds directly on the concepts and configuration from Part 1 — if something in Part 1 isn't working, you want to know before Week 4, not during it. Instructor and TAs are available during both sessions.
+
 > **Start here if this is your first time:** [`SETUP.md`](SETUP.md) — install Pulumi, configure AWS credentials, set up SSH key.
 
 > ⚠️ **Cost note:** The NAT Gateway costs ~$0.045/hour just to exist. Do **not** leave it running between weeks — run `pulumi destroy` at the end of Week 3 class as directed in the Part 1 guide. You will rebuild at the start of Week 4 (takes 4–6 minutes).
@@ -41,7 +43,7 @@ The focus is on building correctly with an understanding of why each piece exist
 
 Submit a **single PDF** named `LastName_FirstName_Lab3.pdf` combining deliverables from both parts. Capture screenshots as you work — they cannot be recreated after `pulumi destroy`.
 
-### Part 1 Deliverables (due end of Week 3) — 45 points
+### Part 1 Deliverables — 45 points
 
 | # | Deliverable | Points |
 |---|-------------|--------|
@@ -51,7 +53,7 @@ Submit a **single PDF** named `LastName_FirstName_Lab3.pdf` combining deliverabl
 | D4 | Written: Why the bastion host pattern exists + one improvement to reduce its risk (3–5 sentences) | 10 |
 | D5 | Terminal: `pulumi destroy` completing with 0 errors (end of Week 3) | 5 |
 
-### Part 2 Deliverables (due end of Week 4) — 55 points
+### Part 2 Deliverables — 55 points
 
 | # | Deliverable | Points |
 |---|-------------|--------|
@@ -62,7 +64,7 @@ Submit a **single PDF** named `LastName_FirstName_Lab3.pdf` combining deliverabl
 | D10 | Terminal: `curl https://checkip.amazonaws.com` from **private instance** — IP matches `natEip` | 15 |
 | D11 | Terminal: `pulumi destroy` completing with 0 errors (end of Week 4) | 10 |
 
-### Extra Credit (due end of Week 4) — 10 points
+### Extra Credit — 10 points
 
 | # | Deliverable | Points |
 |---|-------------|--------|
