@@ -170,7 +170,7 @@ The egress rule is the same for both: allow all outbound traffic (the private in
 private_sg = aws.ec2.SecurityGroup(
     "private-sg",
     vpc_id=vpc.id,
-    description="Private instance — SSH from within VPC only, no internet inbound",
+    description="Private instance - SSH from within VPC only, no internet inbound",
     ingress=[{
         "protocol": "tcp",
         "from_port": 22,
@@ -183,7 +183,7 @@ private_sg = aws.ec2.SecurityGroup(
         "from_port": 0,
         "to_port": 0,
         "cidr_blocks": ["0.0.0.0/0"],
-        "description": "All outbound — traffic goes through NAT Gateway",
+        "description": "All outbound - traffic goes through NAT Gateway",
     }],
     tags={"Name": "NovaSpark-Private-SG", "Lab": "3"},
 )
