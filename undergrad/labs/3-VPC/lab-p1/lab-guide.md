@@ -231,7 +231,17 @@ pulumi config set aws:region us-east-1
 pulumi preview
 ```
 
-You should see approximately 16 resources listed: VPC, 4 subnets, IGW, EIP, NAT Gateway, 2 route tables, 4 route table associations, 2 routes, 2 security groups, 2 EC2 instances.
+You should see approximately 20-21 resources listed:
+- 1 VPC
+- 4 subnets
+- 1 IGW
+- 1 EIP
+- 1 NAT Gateway
+- 2 route tables
+- 4 route table associations
+- 2 routes
+- 2 security groups
+- 2 EC2 instances
 
 If you see fewer than 16, check that all five TODOs are complete and that the private instance outputs are uncommented.
 
