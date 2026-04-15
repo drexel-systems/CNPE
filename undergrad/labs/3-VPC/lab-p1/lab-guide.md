@@ -89,6 +89,11 @@ Before writing any code, spend five minutes understanding what you're building. 
 | Private RT | `10.0.0.0/16` | local | VPC-internal traffic stays internal |
 | Private RT | `0.0.0.0/0` | NAT Gateway | Everything else → NAT (outbound only) |
 
+> **Why four subnets if only two instances are deployed?**
+> The Pulumi code creates subnets in two Availability Zones (AZ-A and AZ-B) — but the bastion, NAT Gateway, and private instance all land in AZ-A. The AZ-B subnets are empty for now. This is intentional. Production-grade VPC design always provisions subnets across at least two AZs up front, even before workloads need them. When you add a managed service later in the course — RDS, EKS, or a load balancer — those services require multi-AZ subnet groups and will consume both sets of subnets automatically. Building the scaffold now means you won't need to restructure the network later.
+>
+> **Why only one NAT Gateway?** In a real production environment you'd deploy one NAT Gateway per AZ. If AZ-A goes down, private instances in AZ-B would lose outbound internet access because their route points to a NAT Gateway that's unreachable. For this lab, one NAT Gateway is the right call — a second one doubles the cost to ~$0.09/hr on a $50 budget. It's a deliberate cost/availability tradeoff, and one worth knowing about.
+
 ---
 
 ## Step 1: Write the Code — Complete the TODOs in `__main__.py`

@@ -90,6 +90,11 @@ Before touching any code, spend five minutes understanding what you're building.
 | Private RT | `10.0.0.0/16` | local | VPC-internal traffic stays internal |
 | Private RT | `0.0.0.0/0` | NAT Gateway | Everything else → NAT (outbound only) |
 
+> **Why four subnets if only two instances are deployed?**
+> The Pulumi code creates subnets in two Availability Zones (AZ-A and AZ-B) — but the bastion, NAT Gateway, and private instance all land in AZ-A. The AZ-B subnets are empty for now. This is intentional. Production-grade VPC design always provisions subnets across at least two AZs up front, even before workloads need them. Managed services such as RDS, EKS, and load balancers require multi-AZ subnet groups at creation time — retrofitting them later means restructuring the network under live workloads. The scaffold is built now so it doesn't need to be rebuilt later.
+>
+> **Why only one NAT Gateway?** In a production environment you'd deploy one NAT Gateway per AZ. If AZ-A becomes unavailable, private instances in AZ-B lose outbound internet access because their route table still points to a NAT Gateway that no longer responds. One NAT Gateway is the right call for this lab — a second doubles the cost to ~$0.09/hr on a $50 budget. As you read the code, consider: where exactly is this tradeoff encoded, and what would you change to make it production-grade?
+
 ---
 
 ## Step 1: Read and Annotate the Code Before You Deploy
