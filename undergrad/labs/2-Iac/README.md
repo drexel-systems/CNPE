@@ -126,9 +126,7 @@ Complete Part 3 to automate the full deployment with `user_data` — no SSH requ
 
 This lab has two submission components. Both are required for full credit.
 
-### 1 — Push your code to GitHub
-
-Your course repository uses a single-repo convention — one repo for the entire course, organized by lab directory. Push your completed Pulumi code to the `lab2/` directory in your assignment repo:
+Push all deliverables to the `lab2/` directory of your **private course GitHub repository**:
 
 ```
 your-course-repo/
@@ -137,18 +135,19 @@ your-course-repo/
     │   └── __main__.py      ← your completed Part 1 code
     ├── lab-p2/
     │   └── __main__.py      ← your completed Part 2 code
-    └── lab-p3/
-        └── __main__.py      ← optional: include if you completed Part 3 for extra credit
+    ├── lab-p3/
+    │   └── __main__.py      ← optional: include if you completed Part 3 for extra credit
+    └── LastName_FirstName_Lab2.pdf   ← your screenshots and written responses, D1–D9
+                                         in order with a title page; include EC1–EC4
+                                         at the end if submitting for extra credit
 ```
 
-You do not need to push config files, `.pulumi/` state, or the `website/` directory — just the `__main__.py` files you wrote.
+You do not need to push config files, `.pulumi/` state, or the `website/` directory.
 
-### 2 — Submit to Canvas
+### Confirm on Canvas
 
-Submit **both** of the following in the Canvas Lab 2 assignment:
+Submit the URL to your `lab2/` directory as a text entry in the Canvas Lab 2 assignment:
 
-- **Upload:** `LastName_FirstName_Lab2.pdf` — your screenshots and written responses, D1–D9 in order with a title page; include EC1–EC4 at the end if submitting for extra credit
-- **Text entry:** Paste the URL to your `lab2/` directory in your GitHub repo
-  *(Example: `https://github.com/your-org/your-repo/tree/main/lab2`)*
+*(Example: `https://github.com/your-org/your-repo/tree/main/lab2`)*
 
-> **Due:** See course syllabus. Both the PDF upload and the GitHub link must be present in Canvas for the submission to be considered complete.
+> **Due:** See course syllabus. Your `__main__.py` files and PDF must be committed and visible in your repo before the deadline. There are no exceptions for files that were "on your machine" or "almost pushed."
