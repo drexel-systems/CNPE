@@ -170,7 +170,7 @@ The egress rule is the same for both: allow all outbound traffic (the private in
 private_sg = aws.ec2.SecurityGroup(
     "private-sg",
     vpc_id=vpc.id,
-    description="Private instance — SSH from within VPC only, no internet inbound",
+    description="Private instance - SSH from within VPC only, no internet inbound",
     ingress=[{
         "protocol": "tcp",
         "from_port": 22,
@@ -183,7 +183,7 @@ private_sg = aws.ec2.SecurityGroup(
         "from_port": 0,
         "to_port": 0,
         "cidr_blocks": ["0.0.0.0/0"],
-        "description": "All outbound — traffic goes through NAT Gateway",
+        "description": "All outbound - traffic goes through NAT Gateway",
     }],
     tags={"Name": "NovaSpark-Private-SG", "Lab": "3"},
 )
@@ -231,7 +231,17 @@ pulumi config set aws:region us-east-1
 pulumi preview
 ```
 
-You should see approximately 16 resources listed: VPC, 4 subnets, IGW, EIP, NAT Gateway, 2 route tables, 4 route table associations, 2 routes, 2 security groups, 2 EC2 instances.
+You should see approximately 20-21 resources listed:
+- 1 VPC
+- 4 subnets
+- 1 IGW
+- 1 EIP
+- 1 NAT Gateway
+- 2 route tables
+- 4 route table associations
+- 2 routes
+- 2 security groups
+- 2 EC2 instances
 
 If you see fewer than 16, check that all five TODOs are complete and that the private instance outputs are uncommented.
 
