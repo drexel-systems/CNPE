@@ -56,13 +56,16 @@ import pulumi_aws as aws
 # 1. AMI — Amazon Linux 2 (ARM64 / Graviton), consistent with Lab 2
 #    t4g.micro is the cheapest general-purpose instance type in AWS.
 # ---------------------------------------------------------------------------
-ami = aws.ec2.get_ami(
-    owners=["137112412989"],  # Amazon's official account ID
-    filters=[{
-        "name": "image-id",
-        "values": ["ami-0a101d355d07a638e"],  # Amazon Linux 2 ARM64, us-east-1
-    }],
-    most_recent=True,
+# ami = aws.ec2.get_ami(
+#     owners=["137112412989"],  # Amazon's official account ID
+#     filters=[{
+#         "name": "image-id",
+#         "values": ["ami-0a101d355d07a638e"],  # Amazon Linux 2 ARM64, us-east-1
+#     }],
+#     most_recent=True,
+# )
+ami = aws.ssm.get_parameter_output(
+    name="/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64",
 )
 
 # ---------------------------------------------------------------------------
@@ -305,7 +308,7 @@ bastion_sg = aws.ec2.SecurityGroup(
 # ---------------------------------------------------------------------------
 bastion = aws.ec2.Instance(
     "bastion",
-    ami=ami.id,
+    ami=ami.value,
     instance_type="t4g.micro",
     subnet_id=public_subnet_a.id,
     vpc_security_group_ids=[bastion_sg.id],

@@ -249,13 +249,13 @@ aws.ec2.RouteTableAssociation("private-rt-assoc-b",
 bastion_sg = aws.ec2.SecurityGroup(
     "bastion-sg",
     vpc_id=vpc.id,
-    description="Bastion host — SSH from internet",
+    description="Bastion host SSH from internet",
     ingress=[{
         "protocol": "tcp",
         "from_port": 22,
         "to_port": 22,
         "cidr_blocks": ["0.0.0.0/0"],
-        "description": "SSH from anywhere — restrict to your IP in production",
+        "description": "SSH from anywhere restrict to your IP in production",
     }],
     egress=[{
         "protocol": "-1",
@@ -270,7 +270,7 @@ bastion_sg = aws.ec2.SecurityGroup(
 private_sg = aws.ec2.SecurityGroup(
     "private-sg",
     vpc_id=vpc.id,
-    description="Private instance — SSH from within VPC only, no internet inbound",
+    description="Private instance SSH from within VPC only, no internet inbound",
     ingress=[{
         "protocol": "tcp",
         "from_port": 22,
@@ -283,7 +283,7 @@ private_sg = aws.ec2.SecurityGroup(
         "from_port": 0,
         "to_port": 0,
         "cidr_blocks": ["0.0.0.0/0"],
-        "description": "All outbound — traffic goes through NAT Gateway",
+        "description": "All outbound traffic goes through NAT Gateway",
     }],
     tags={"Name": "NovaSpark-Private-SG", "Lab": "3"},
 )
