@@ -173,7 +173,7 @@ hostname -I
 Now check whether the instance has a public IP via the instance metadata service:
 
 ```bash
-curl -s --max-time 3 http://169.254.169.254/latest/meta-data/public-ipv4 || echo "No public IP"
+curl -sf --max-time 3 http://169.254.169.254/latest/meta-data/public-ipv4 || echo "No public IP"
 ```
 
 **Take your D9 screenshot here** — this command returning `No public IP` (or timing out). This confirms from *inside the instance* that AWS never assigned it a public address.
@@ -295,7 +295,7 @@ Wait 60 seconds after `pulumi up` completes. Verify the key: `chmod 400 ~/.ssh/l
 | **D7** | Terminal: `curl -s https://checkip.amazonaws.com` from the **bastion** | Step 3 | Returned IP must match `bastionPublicIp` from Pulumi outputs | 10 |
 | **D8** | Terminal: `hostname -I` from inside the **private instance** | Step 4 | Must show a `10.0.11.x` address | 10 |
 | **D9** | Terminal: metadata check returning `No public IP` from private instance | Step 4 | `curl --max-time 3 http://169.254.169.254/.../public-ipv4` times out or returns nothing | 5 |
-| **D10** | Terminal: `curl -s https://checkip.amazonaws.com` from the **private instance** | Step 5 | Returned IP must match `natEip` from Pulumi outputs — this is the key proof | 15 |
+| **D10** | Terminal: `curl -s https://checkip.amazonaws.com` from the **private instance** | Step 5 | Returned IP may or may not match `natEip` from Pulumi outputs — under what conditions would you expect it match or not match? | 15 |
 | **D11** | Terminal: `pulumi destroy` completing with 0 errors | Step 7 | Must show "X resources destroyed, 0 errors" | 10 |
 
 ### Extra Credit — Context Paragraph (+10 pts)
