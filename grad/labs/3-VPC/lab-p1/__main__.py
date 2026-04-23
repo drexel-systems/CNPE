@@ -56,15 +56,17 @@ import pulumi_aws as aws
 # 1. AMI — Amazon Linux 2 (ARM64 / Graviton), consistent with Lab 2
 #    t4g.micro is the cheapest general-purpose instance type in AWS.
 # ---------------------------------------------------------------------------
-ami = aws.ec2.get_ami(
-    owners=["137112412989"],  # Amazon's official account ID
-    filters=[{
-        "name": "image-id",
-        "values": ["ami-0a101d355d07a638e"],  # Amazon Linux 2 ARM64, us-east-1
-    }],
-    most_recent=True,
+# ami = aws.ec2.get_ami(
+#     owners=["137112412989"],  # Amazon's official account ID
+#     filters=[{
+#         "name": "image-id",
+#         "values": ["ami-0a101d355d07a638e"],  # Amazon Linux 2 ARM64, us-east-1
+#     }],
+#     most_recent=True,
+# )
+ami = aws.ssm.get_parameter_output(
+    name="/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64",
 )
-
 # ---------------------------------------------------------------------------
 # 2. VPC — the private network boundary for all NovaSpark resources
 #

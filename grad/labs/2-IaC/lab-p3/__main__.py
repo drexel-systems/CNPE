@@ -35,13 +35,16 @@ import pulumi_aws as aws
 # ---------------------------------------------------------------------------
 # 1. AMI — Amazon Linux 2 (ARM64 / Graviton)
 # ---------------------------------------------------------------------------
-ami = aws.ec2.get_ami(
-    owners=["137112412989"],
-    filters=[{
-        "name": "image-id",
-        "values": ["ami-0a101d355d07a638e"],
-    }],
-    most_recent=True,
+# ami = aws.ec2.get_ami(
+#     owners=["137112412989"],
+#     filters=[{
+#         "name": "image-id",
+#         "values": ["ami-0a101d355d07a638e"],
+#     }],
+#     most_recent=True,
+# )
+ami = aws.ssm.get_parameter_output(
+    name="/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64",
 )
 
 # ---------------------------------------------------------------------------
