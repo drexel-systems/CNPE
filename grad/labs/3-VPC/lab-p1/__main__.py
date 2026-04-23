@@ -303,7 +303,7 @@ private_sg = aws.ec2.SecurityGroup(
 # ---------------------------------------------------------------------------
 bastion = aws.ec2.Instance(
     "bastion",
-    ami=ami.id,
+    ami=ami.value,
     instance_type="t4g.micro",
     subnet_id=public_subnet_a.id,
     vpc_security_group_ids=[bastion_sg.id],
@@ -313,7 +313,7 @@ bastion = aws.ec2.Instance(
 
 private_instance = aws.ec2.Instance(
     "private-instance",
-    ami=ami.id,
+    ami=ami.value,
     instance_type="t4g.micro",
     subnet_id=private_subnet_a.id,
     vpc_security_group_ids=[private_sg.id],
