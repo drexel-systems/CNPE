@@ -233,7 +233,7 @@ Why delete before Pulumi? If you leave these running, Pulumi will create duplica
 
 **What you're doing:** Redeploy the same Lambda + API Gateway using Pulumi. Everything you built by hand in Parts 1 and 2, you'll now define as code. Then make a change — and deploy the update with a single command.
 
-**This is the important part.** The stack you create here is your capstone foundation. Do not destroy it at the end of this lab.
+**This is the important part.** The stack you create here establishes the pattern your course project builds on. Run `pulumi destroy` when you've completed all deliverables — the next lab starts from a fresh provided template.
 
 ---
 
@@ -374,7 +374,7 @@ Before moving on to the written deliverables, look at the AWS Console for each r
 - **API Gateway → novaSpark-status-api:** Click **Integrations** — you should see your Lambda integration with `payload_format_version: 2.0`
 - **IAM → Roles → LabRole:** This is the role your Lambda is using. It has far more permissions than a status endpoint needs — that's an AWS Academy sandbox constraint. The `__main__.py` comments show what a tightly scoped role would look like in a real AWS account.
 
-> **The least-privilege principle:** In production, a Lambda function's execution role should grant only the specific actions it actually calls. For a function that writes logs and returns JSON, that's three CloudWatch Logs actions (`CreateLogGroup`, `CreateLogStream`, `PutLogEvents`) and nothing else. When you add DynamoDB in the capstone, you'd add `dynamodb:PutItem` and `dynamodb:GetItem` scoped to the specific table ARN — not to `*`. LabRole skips this scoping because the Learner Lab sandbox restricts creating new roles. Keep this tradeoff in mind for W2.
+> **The least-privilege principle:** In production, a Lambda function's execution role should grant only the specific actions it actually calls. For a function that writes logs and returns JSON, that's three CloudWatch Logs actions (`CreateLogGroup`, `CreateLogStream`, `PutLogEvents`) and nothing else. When you add DynamoDB in the course project, you'd add `dynamodb:PutItem` and `dynamodb:GetItem` scoped to the specific table ARN — not to `*`. LabRole skips this scoping because the Learner Lab sandbox restricts creating new roles. Keep this tradeoff in mind for W2.
 
 ---
 
@@ -420,4 +420,4 @@ Before submitting, confirm you have all of the following in your PDF:
 - [ ] W1 — Cold start explanation with real numbers from your logs
 - [ ] W2 — Lambda vs. EC2 for both scenarios
 
-Commit your `__main__.py` and `app/handler.py` to your course repo. Do not run `pulumi destroy` — this stack is your capstone foundation.
+Commit your `__main__.py` and `app/handler.py` to your course repo. Then run `pulumi destroy` to clean up. The next lab starts from a fresh provided template.

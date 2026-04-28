@@ -6,8 +6,8 @@ This file deploys NovaSpark's first serverless service using Pulumi.
 Complete the TODOs below. When all TODOs are filled in, `pulumi up`
 should create ~9 resources with no errors.
 
-When you're done, this stack is your capstone foundation.
-DO NOT run `pulumi destroy` at the end of this lab.
+Run `pulumi destroy` when you've completed all deliverables.
+The next lab starts from a fresh provided template.
 """
 
 import json

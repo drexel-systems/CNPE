@@ -23,7 +23,7 @@ By the end of this lab, you will be able to:
 
 You are a cloud engineer at **NovaSpark Technologies**. The team needs a lightweight API endpoint up and running this week — no new servers, no SSH, no always-on compute. This is NovaSpark's first serverless service.
 
-The Pulumi stack you build in Part 3 of this lab is **your capstone foundation**. Do not run `pulumi destroy` at the end of this lab. You will extend this same stack in later labs to add persistence and additional routes.
+The Pulumi stack you build in Part 3 of this lab is the foundation for your course project. Run `pulumi destroy` when you've completed all deliverables — the next lab starts from a fresh provided template.
 
 | Part | Guide | What You'll Do | Est. Time |
 |------|-------|----------------|-----------|
@@ -33,7 +33,7 @@ The Pulumi stack you build in Part 3 of this lab is **your capstone foundation**
 
 > **Start here if this is your first time:** [`SETUP.md`](SETUP.md) — confirm your environment before writing any code.
 
-> 💰 **Cost note:** Lambda and API Gateway are both free tier — there is no per-hour cost to leave this running. You do not need to destroy at the end of this lab. Practice `pulumi destroy` only as the final step of the written exercise W4.
+> 💰 **Cost note:** Lambda and API Gateway are both free tier. Run `pulumi destroy` after completing all deliverables. The next lab provides a fresh starter template.
 
 ---
 
@@ -103,9 +103,9 @@ Submit the URL to your `4-Serverless/` directory as a text entry in the Canvas L
 
 ---
 
-## A Note on the Capstone
+## A Note on the Course Project
 
-This lab is the foundation your capstone project builds on. The `pulumi up` stack you deploy in Part 3 — Lambda + API Gateway — is what you will extend with DynamoDB, additional routes, and IAM permissions in later labs and the final project. Keep it. Treat it like production infrastructure: commit your code, don't manually modify resources through the console after Part 2, and understand every resource in the stack before you add to it.
+This lab establishes the patterns your course project builds on. The Lambda + API Gateway stack you deploy in Part 3 — with its IaC structure, environment variables, and execution role — is the same pattern you will extend with DynamoDB, additional routes, and more IAM permissions in later labs. Treat each stack like production infrastructure: commit your code, don't manually modify resources through the console after Part 2, and understand every resource before you add to it.
 
 ---
 

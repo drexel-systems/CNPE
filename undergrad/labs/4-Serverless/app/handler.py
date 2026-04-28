@@ -3,7 +3,7 @@ NovaSpark Technologies — Status API
 Lambda handler for the /status endpoint.
 
 This file is complete. You do not need to modify it in Parts 1–3.
-In the capstone project, you will extend this handler to support
+In the course project, you will extend this handler to support
 additional routes (POST, GET by ID) and DynamoDB reads/writes.
 """
 

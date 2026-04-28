@@ -27,7 +27,7 @@ The analytical work is the point of this lab. The deployment is the prerequisite
 
 > **Start here:** [`SETUP.md`](SETUP.md) — confirm Pulumi and AWS credentials are working before reading the code.
 
-> 💰 **Cost note:** Lambda and API Gateway are free tier. Leave the stack running — you will extend it in the next lab (DynamoDB integration). Do not run `pulumi destroy` at the end of this lab.
+> 💰 **Cost note:** Lambda and API Gateway are free tier. Run `pulumi destroy` when you've completed all deliverables. The next lab provides a fresh starter template.
 
 ---
 

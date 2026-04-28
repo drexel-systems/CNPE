@@ -242,4 +242,4 @@ Before submitting, confirm you have all of the following in your PDF in this ord
 - [ ] D6 — Prediction exercise (3–5 sentences, specific claim)
 - [ ] CP — Context paragraph (150–250 words)
 
-Push `__main__.py` and `app/handler.py` to your course repo. Leave the stack running — you will extend it in Lab 5.
+Push `__main__.py` and `app/handler.py` to your course repo. Then run `pulumi destroy` to clean up. The next lab starts from a fresh provided template.
