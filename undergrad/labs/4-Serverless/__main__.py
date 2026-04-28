@@ -72,6 +72,7 @@ lambda_archive = None  # Replace this line
 # Use aws.lambda_.Function() with the following arguments:
 #
 #   resource name:  "novaSpark-status-fn"
+#   description:    "NovaSpark Status API for Lab 4"
 #   runtime:        "python3.12"
 #   role:           lambda_role.arn
 #   handler:        "handler.lambda_handler"

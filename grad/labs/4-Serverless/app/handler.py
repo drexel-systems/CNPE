@@ -19,9 +19,27 @@ connection reuse across warm invocations.
 import json
 import os
 import logging
+import datetime
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# ---------------------------------------------------------------
+# MODULE-LEVEL (GLOBAL) SCOPE — runs once per execution environment
+#
+# Everything here executes during the cold start Init Duration and
+# is never repeated on warm invocations. This is where you put
+# anything expensive to initialize: boto3 clients, DB connections,
+# config loading, ML model loading — anything that should be reused
+# across calls rather than rebuilt on every invocation.
+#
+# env_create_time is a simple observable example: it records when
+# this execution environment was created. Watch it in the API
+# response — it stays frozen across warm calls and only resets
+# when Lambda creates a new environment (cold start).
+# ---------------------------------------------------------------
+env_create_time = datetime.datetime.now()
+print(f"--- GLOBAL INIT: Environment created at {env_create_time} ---")
 
 
 def lambda_handler(event, context):
@@ -50,10 +68,17 @@ def lambda_handler(event, context):
     logger.info(f"Memory limit: {context.memory_limit_in_mb} MB")
     logger.info(f"Time remaining: {context.get_remaining_time_in_millis()} ms")
 
+    # Log how long this execution environment has been alive.
+    # On a cold start this is milliseconds. On a warm invocation it
+    # could be minutes — the same environment handling another request.
+    env_age = (datetime.datetime.now() - env_create_time).total_seconds()
+    logger.info(f"Environment age: {env_age:.2f}s")
+
     response_body = {
         "service": service_name,
         "status": "operational",
         "environment": environment,
+        "created_at": env_create_time.isoformat(),
         "message": "All systems go.",
     }
 

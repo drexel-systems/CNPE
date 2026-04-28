@@ -10,9 +10,27 @@ additional routes (POST, GET by ID) and DynamoDB reads/writes.
 import json
 import os
 import logging
+import datetime
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# ---------------------------------------------------------------
+# MODULE-LEVEL (GLOBAL) SCOPE — runs once per execution environment
+#
+# Everything here executes during the cold start Init Duration and
+# is never repeated on warm invocations. This is where you put
+# anything expensive to initialize: boto3 clients, DB connections,
+# config loading — anything that should be reused across calls
+# rather than rebuilt on every invocation.
+#
+# env_create_time is a simple observable example: it records when
+# this execution environment was created. Watch it in the API
+# response — it stays frozen across warm calls and only resets
+# when Lambda creates a new environment (cold start).
+# ---------------------------------------------------------------
+env_create_time = datetime.datetime.now()
+print(f"--- GLOBAL INIT: Environment created at {env_create_time} ---")
 
 
 def lambda_handler(event, context):
@@ -20,31 +38,44 @@ def lambda_handler(event, context):
     Returns the current NovaSpark system status as JSON.
 
     Args:
-        event: The event dict from the invoker (API Gateway passes HTTP request info here).
-        context: Runtime information — function name, memory limit, time remaining.
+        event: The event dict from the invoker. When called via API Gateway,
+               this includes the HTTP method, path, headers, and query params.
+        context: Lambda runtime metadata — function name, memory limit,
+                 remaining execution time. Useful for cold start analysis.
     """
 
-    # Log the full event so you can see what API Gateway sends (visible in CloudWatch)
+    # Log the full event so you can trace what API Gateway sends
     logger.info(f"Event received: {json.dumps(event)}")
 
-    # Read configuration from environment variables (12-factor Factor III)
+    # Read configuration from environment (12-factor Factor III)
+    # These values are set in the Pulumi template — no values are hardcoded here
     environment = os.environ.get("ENVIRONMENT", "unknown")
     service_name = os.environ.get("SERVICE", "status-api")
 
-    # Log Lambda runtime metadata — useful for observing cold start behavior
+    # Log Lambda runtime metadata
+    # The context.get_remaining_time_in_millis() value in CloudWatch
+    # helps you understand execution duration relative to the timeout setting
     logger.info(f"Function: {context.function_name}")
     logger.info(f"Memory limit: {context.memory_limit_in_mb} MB")
     logger.info(f"Time remaining: {context.get_remaining_time_in_millis()} ms")
 
-    # Build the response body
+    # Log how long this execution environment has been alive.
+    # On a cold start this is milliseconds. On a warm invocation it
+    # could be minutes — the same environment handling another request.
+    env_age = (datetime.datetime.now() - env_create_time).total_seconds()
+    logger.info(f"Environment age: {env_age:.2f}s")
+
     response_body = {
         "service": service_name,
         "status": "operational",
         "environment": environment,
+        "created_at": env_create_time.isoformat(),
         "message": "All systems go.",
     }
 
-    # Lambda response format required by API Gateway HTTP API (payload format version 2.0)
+    # API Gateway HTTP API (v2) requires this response envelope format
+    # statusCode, headers, and body are all required
+    # body must be a string (json.dumps), not a dict
     return {
         "statusCode": 200,
         "headers": {

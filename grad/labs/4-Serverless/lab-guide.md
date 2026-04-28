@@ -36,6 +36,7 @@ The comments in the template are intentional — they explain the choices. Read 
 2. Why `payload_format_version: "2.0"` on the integration must match the handler's response format
 3. What `source_arn=http_api.execution_arn.apply(lambda arn: f"{arn}/*/*")` scopes the Lambda permission to
 4. Why `auto_deploy=True` on the stage is convenient but might not be appropriate in production
+5. The module-level block in `handler.py` — what runs there, when does it run, and why does the `created_at` field in the response prove it?
 
 ---
 
@@ -89,9 +90,11 @@ curl $(pulumi stack output api_url)
 
 **D2 deliverable:** Screenshot of the `curl` command and JSON response confirming the endpoint is live.
 
+> **Look at the `created_at` field in the response.** This timestamp is set at module level — outside the handler — during the Init Duration. It records the moment this execution environment was born. Write it down. You will compare it on your next invocation.
+
 Navigate to: **Lambda → novaSpark-status-fn → Monitor → View CloudWatch Logs**
 
-Open the most recent log stream. Look for the REPORT line:
+Open the most recent log stream. Look for the `--- GLOBAL INIT ---` line near the top of the stream — it confirms module-level code ran. Then look for the REPORT line:
 
 ```
 REPORT RequestId: abc123  Duration: 4.21 ms  Billed Duration: 5 ms
@@ -112,15 +115,56 @@ Immediately invoke the function a second time:
 curl $(pulumi stack output api_url)
 ```
 
-Open CloudWatch again. The new REPORT line should NOT have an `Init Duration` — just `Duration` and `Billed Duration`. The `Duration` should be significantly smaller.
+Open CloudWatch again. The new REPORT line should NOT have an `Init Duration` — just `Duration` and `Billed Duration`. The `Duration` should be significantly smaller. Also note: the `--- GLOBAL INIT ---` line does **not** appear in this log entry — the module-level block did not re-run.
 
 **D3 deliverable:** Screenshots of both REPORT lines (cold and warm). Label which is which. The cold start report must include `Init Duration`.
 
+> **Compare the `created_at` field.** Run curl again and look at the `created_at` timestamp in the response. It is identical to the one from Step 2.1. The global variable was set once during the cold start and survived into this warm invocation unchanged. This is not just trivia: it is why boto3 clients, database connections, and loaded ML models all belong at module level. One initialization, reused across every subsequent request that hits this execution environment.
+
 ---
 
-### Step 2.3 — Write the Analysis (D4)
+### Step 2.3 — Examine the Event Object
 
-Using your actual measured values, write your cold start performance analysis. Your analysis should address:
+While you have the log stream open, find the line starting with `Event received:` — this is the full JSON object Lambda received from API Gateway when you ran curl. It looks approximately like this:
+
+```json
+{
+  "version": "2.0",
+  "routeKey": "GET /status",
+  "rawPath": "/status",
+  "rawQueryString": "",
+  "headers": {
+    "user-agent": "curl/7.88.1",
+    "host": "abc123.execute-api.us-east-1.amazonaws.com"
+  },
+  "requestContext": {
+    "http": {
+      "method": "GET",
+      "path": "/status",
+      "sourceIp": "1.2.3.4"
+    },
+    "stage": "$default",
+    "routeKey": "GET /status"
+  },
+  "isBase64Encoded": false
+}
+```
+
+This is the entire upstream context Lambda receives — HTTP method, path, headers, source IP, route match — all normalized into a plain Python dict by API Gateway before your handler ever runs. Your handler doesn't import anything HTTP-specific. It doesn't open a socket. It just receives `event` and reads keys.
+
+This is not accidental. It is the core abstraction of the FaaS model: **the trigger is decoupled from the compute**. The same `lambda_handler(event, context)` signature handles an API Gateway request, an S3 put notification, an SQS message batch, or a scheduled EventBridge invocation. The event shape changes; the handler contract does not.
+
+Hellerstein et al. frame this as a strength of the FaaS model — the platform absorbs the integration concern, and functions remain stateless, trigger-agnostic units of logic. It is also where the abstraction leaks: if you need low-level HTTP features (connection keep-alive, chunked streaming, WebSockets), Lambda's event model does not expose them. You are working with a snapshot of the request, not the connection itself.
+
+Note the `routeKey` field: `"GET /status"`. This is how API Gateway tells Lambda which route matched. In Lab 5, when you add multiple routes, you will use this field to dispatch to the right handler logic.
+
+> **No deliverable required for this step** — but the event object structure will appear in D4. When you write about the global scope and what Janet's DynamoDB question means, consider: where in this event object would a POST body appear? Where would a path parameter like `/events/{id}` show up? You don't need to answer now — just keep it in mind.
+
+---
+
+### Step 2.4 — Write the Analysis (D4)
+
+Using your actual measured values and your event object observations, write your cold start performance analysis. Your analysis should address:
 
 1. **The measured gap:** What was your Init Duration? What was your warm Duration? What is the ratio? What does this mean for NovaSpark's users if they're the first to hit the endpoint after it's gone cold?
 
@@ -130,7 +174,9 @@ Using your actual measured values, write your cold start performance analysis. Y
    - Increasing memory allocation (larger runtime, faster init)
    - Moving initialization code outside the handler (module-level imports)
 
-3. **NovaSpark's specific situation:** The current traffic is low and variable. Given that, which mitigation makes the most sense for now? What threshold of traffic would change your recommendation?
+3. **The global scope advantage:** Open `handler.py` and find the module-level block. Explain what runs there versus what runs inside `lambda_handler`. Using your `created_at` observations from Steps 2.1 and 2.2, explain what would happen to performance if `env_create_time = datetime.datetime.now()` were moved inside the handler. Then explain why Janet's next question — "what happens when we add DynamoDB?" — points at this same pattern: where should a `boto3.resource("dynamodb")` client be initialized, and why?
+
+4. **NovaSpark's specific situation:** The current traffic is low and variable. Given that, which mitigation makes the most sense for now? What threshold of traffic would change your recommendation?
 
 Maximum 1 page.
 
@@ -191,7 +237,7 @@ Before submitting, confirm you have all of the following in your PDF in this ord
 - [ ] D1 — `pulumi up` output (all resources, no errors)
 - [ ] D2 — `curl` response from Pulumi-deployed endpoint
 - [ ] D3 — Cold start REPORT and warm REPORT lines (labeled)
-- [ ] D4 — Cold start performance analysis (1 page max, with measured values)
+- [ ] D4 — Cold start performance analysis (1 page max, with measured values and event object observations)
 - [ ] D5 — Execution role analysis (3–5 sentences)
 - [ ] D6 — Prediction exercise (3–5 sentences, specific claim)
 - [ ] CP — Context paragraph (150–250 words)

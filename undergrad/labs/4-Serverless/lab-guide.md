@@ -101,6 +101,8 @@ Click **Deploy** to save the code.
 
 > **Cold start setup:** The first time you invoke a Lambda function, AWS has to prepare an execution environment from scratch — download your code, initialize the runtime, run any module-level setup. This initialization overhead is called a **cold start**, and it only shows up in CloudWatch logs as `Init Duration`. Since you haven't invoked this function yet, your very first test in Step 1.5 will be a cold start. Don't invoke the function from the console before clicking Test in Step 1.5, or you'll miss it.
 
+> **Module-level vs. handler-level code:** Notice that the handler code above has everything inside `lambda_handler`. When you switch to the provided `app/handler.py` in Part 3, you'll see it has code *outside* the handler at module level — specifically, a timestamp set at import time. That code runs once when Lambda initializes the environment and never again on warm calls. The response will include a `created_at` field that proves this: it stays frozen across warm invocations and only resets on a new cold start. This matters because anything expensive to set up — a database client, a loaded config file — belongs at module level so it's paid for once, not on every request.
+
 ---
 
 ### Step 1.4 — Add an Environment Variable
@@ -145,6 +147,8 @@ You should see a green **"Execution result: succeeded"** panel showing:
 3. You should see your log lines: the Event JSON, the function name, memory, and remaining time
 
 **Take screenshot D2 now** — the log stream showing your invocations. You need **both** REPORT lines visible: the first invocation (with `Init Duration`) and the second invocation (without it). If you only ran the test once, go back and run it a second time, then refresh the log stream.
+
+> **Look for `--- GLOBAL INIT ---` in the log stream.** In Part 3 you'll switch to the provided `app/handler.py`, which prints this line at module level. It only appears when Lambda creates a brand-new execution environment. On your cold start it will be there. On the warm call it will not. Also notice the `Environment age:` log line — on a cold start it is milliseconds; on a warm call it shows how long that environment has been alive.
 
 > **Reading the REPORT lines.** Your first invocation's REPORT will look like this:
 > ```
@@ -291,6 +295,53 @@ curl $(pulumi stack output api_url)
 
 **Take screenshot D7** — `pulumi stack output api_url` output.
 
+> **Observe the `created_at` field.** Run `curl $(pulumi stack output api_url)` two or three times in a row. Notice that the `created_at` timestamp in the JSON response does not change between calls — the module-level code ran once when Lambda initialized the environment and has not run again. This is the execution model in action: the environment persists, the global variables persist with it. Write down the `created_at` value — you'll reference it in W1.
+
+---
+
+### Step 3.4.1 — Explore the Event Object
+
+After your curl, go back to CloudWatch: **Lambda → novaSpark-status-fn → Monitor → View CloudWatch Logs**
+
+Open the most recent log stream. Find the line starting with `Event received:` — this is the full JSON object Lambda received from API Gateway. Expand it or copy it into a text editor.
+
+You're looking at the contract between API Gateway and Lambda. A trimmed version looks like this:
+
+```json
+{
+  "version": "2.0",
+  "routeKey": "GET /status",
+  "rawPath": "/status",
+  "rawQueryString": "",
+  "headers": {
+    "user-agent": "curl/7.88.1",
+    "host": "abc123.execute-api.us-east-1.amazonaws.com",
+    ...
+  },
+  "requestContext": {
+    "http": {
+      "method": "GET",
+      "path": "/status",
+      "sourceIp": "1.2.3.4"
+    },
+    "stage": "$default",
+    "routeKey": "GET /status"
+  },
+  "isBase64Encoded": false
+}
+```
+
+Find these four fields in your actual log output and note what each contains:
+
+1. `routeKey` — what matched this request to your Lambda
+2. `requestContext.http.method` — the HTTP verb the caller used
+3. `requestContext.http.sourceIp` — where the request came from
+4. `headers.user-agent` — what made the request (you should see `curl/...`)
+
+Now compare this to the test event from Step 1.5. That event had `{"key1": "value1", ...}` — a completely made-up shape with no HTTP concepts at all. Lambda received both and ran the same `lambda_handler(event, context)` function either way. The handler doesn't know or care whether the trigger was API Gateway, a console test, an S3 notification, or an SQS message. Everything upstream becomes that `event` dict — the structure just depends on who sent it.
+
+> **Foreshadowing Lab 5:** When SQS triggers your processor Lambda, the event will look completely different — `{"Records": [{"body": "...", "receiptHandle": "...", ...}]}`. Same handler pattern, different upstream shape. The abstraction is the point.
+
 ---
 
 ### Step 3.5 — Make a Code Change and Redeploy
@@ -337,9 +388,9 @@ Complete W1 and W2 and include them in your PDF after D7.
 
 Answer the following in 3–5 sentences, using the actual numbers from your D2 screenshot:
 
-What is a Lambda cold start and when does it happen? Using the two REPORT lines from D2, what was the `Init Duration` on your first invocation and the `Duration` on your second (warm) invocation? What is the ratio between them, and what would that gap mean for a user hitting this endpoint as the first request of the day? Name two strategies that reduce cold start frequency or impact.
+What is a Lambda cold start and when does it happen? Using the two REPORT lines from D2, what was the `Init Duration` on your first invocation and the `Duration` on your second (warm) invocation? What is the ratio between them, and what would that gap mean for a user hitting this endpoint as the first request of the day? Using the `created_at` field you observed in Step 3.4, explain what it proves about how Lambda execution environments work — specifically, what stayed the same between calls and why. From the event object you examined in Step 3.4.1, pick one field and explain what it tells the handler about the incoming request. Name two strategies that reduce cold start frequency or impact.
 
-> **Your actual numbers are required.** Partial credit for a correct explanation without measured values. Full credit requires citing the specific `Init Duration` and warm `Duration` from your CloudWatch logs.
+> **Your actual numbers are required.** Partial credit for a correct explanation without measured values. Full credit requires citing the specific `Init Duration`, warm `Duration`, a concrete observation from the `created_at` field, and one event object field observation.
 
 ---
 

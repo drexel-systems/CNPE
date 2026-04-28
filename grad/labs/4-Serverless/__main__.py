@@ -73,6 +73,7 @@ lambda_role = aws.iam.get_role(name="LabRole")
 
 lambda_fn = aws.lambda_.Function(
     "novaSpark-status-fn",
+    description="NovaSpark Status API for Lab 4",
     runtime="python3.12",
     role=lambda_role.arn,
     handler="handler.lambda_handler",
