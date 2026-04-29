@@ -1,4 +1,4 @@
-name: novaspark-vpc
+name: novaspark-serverless
 description: Lab 4 - Serverless
 runtime:
   name: python

@@ -52,8 +52,6 @@ pulumi up
 ```
 
 Review the preview carefully before confirming. You should see 7 resources queued for creation:
-- 1 IAM role
-- 1 IAM role policy attachment
 - 1 Lambda function
 - 1 API Gateway HTTP API
 - 1 API Gateway integration
@@ -61,6 +59,7 @@ Review the preview carefully before confirming. You should see 7 resources queue
 - 1 API Gateway stage
 - 1 Lambda permission
 - 1 stack output registration
+
 
 Confirm and let the deployment complete.
 
