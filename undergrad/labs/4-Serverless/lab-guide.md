@@ -269,7 +269,7 @@ You should see the IAM role, policy attachment, and Lambda function created. Che
 
 Fill in TODOs 3 through 7 to create the HTTP API, integration, route, stage, and Lambda permission.
 
-Run `pulumi up` again. You should now have 9 resources total.
+Run `pulumi up` again. You should now have 7 resources total.
 
 ---
 

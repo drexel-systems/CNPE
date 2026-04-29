@@ -51,7 +51,7 @@ export PULUMI_CONFIG_PASSPHRASE=""
 pulumi up
 ```
 
-Review the preview carefully before confirming. You should see 9 resources queued for creation:
+Review the preview carefully before confirming. You should see 7 resources queued for creation:
 - 1 IAM role
 - 1 IAM role policy attachment
 - 1 Lambda function
