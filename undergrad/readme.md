@@ -12,7 +12,7 @@
 
 ## Course Description
 
-An introduction to the principles, tools, and architectures used to design, build, and deploy modern cloud-native software systems. Students apply software engineering concepts across the full stack of cloud infrastructure — from networking and compute to APIs and persistent storage — entirely through hands-on lab work and a capstone project. There are no exams. Every grade in this course comes from something you build and deploy.
+An introduction to the principles, tools, and architectures used to design, build, and deploy modern cloud-native software systems. Students apply software engineering concepts across the full stack of cloud infrastructure — from networking and compute to APIs and persistent storage — entirely through hands-on lab work and a course project. There are no exams. Every grade in this course comes from something you build and deploy.
 
 The course follows a build-from-scratch philosophy: you will write the infrastructure code, configure the network, deploy the services, and wire everything together yourself. By the end of the term, you will have a working, cloud-deployed serverless API — built entirely through code, from a blank AWS account. Along the way, you will apply industry best practices including the use of modern Infrastructure as Code tooling — specifically **Pulumi**, a developer-first IaC platform that lets you define and provision cloud resources using standard Python rather than a proprietary configuration language.
 
@@ -41,7 +41,7 @@ Some weeks are structured differently when content demands it. A lecture-heavy w
 
 ## Commitment and Pacing
 
-This is not a course you can catch up on at the end of the term. **Every lab builds on the previous one.** Your capstone project — worth 35% of your grade — is a direct extension of Lab 4. If Lab 4 is incomplete when you reach Week 9, you have no foundation to build on.
+This is not a course you can catch up on at the end of the term. **Every lab builds on the previous one.** Your course project — worth 30% of your grade — is a direct extension of the API and storage work in Labs 5 and 6. If those labs are incomplete when you reach Week 9, you have no foundation to build on.
 
 The time required outside of class will vary depending on your background across infrastructure, networking, software design, and software development. Students who are newer to any of these areas should budget more time, not less. Some labs will be straightforward; others will require real troubleshooting. Falling a week behind in this course is recoverable. Falling two weeks behind is difficult. Falling three weeks behind almost always is not.
 
@@ -68,7 +68,7 @@ Students will:
 - Apply the AWS Well-Architected Framework to evaluate a real system you built
 - Apply the 12-factor app methodology to cloud-native application design
 - Use DynamoDB for cloud-native persistent storage
-- Complete a working capstone project: a serverless API deployed entirely through code
+- Complete a working course project: a serverless order API deployed entirely through code
 
 ---
 
@@ -92,9 +92,10 @@ Students completing this course will be able to:
 
 - **AWS Academy Learner Lab Access** — provided by instructor; sandbox AWS environment with **$50 in credits** per student
 - **Infrastructure as Code (IaC) Tooling** — this course uses **Pulumi**, a modern IaC tool that lets you define and provision cloud resources using standard Python. This is a deliberate choice: unlike configuration-focused tools such as Terraform (which use a proprietary domain-specific language), Pulumi takes a developer-first approach — your infrastructure code looks and behaves like regular Python, which means you debug it, version it, and reason about it the same way you would any other code. No prior Pulumi experience is required; installation is covered in Week 1. ([Pulumi docs](https://www.pulumi.com/docs/))
-- **Python 3.8+** — primary language for all labs and the capstone project
+- **Python 3.8+** — primary language for all labs and the course project
 - **AWS CLI** — free; installation covered in Lab 1
 - **Git + GitHub account** — free; used for all lab submissions
+- **Postman** — free API testing tool; introduced in Lab 5. [Download here](https://www.postman.com/downloads/)
 
 ### Development Tools
 
@@ -107,6 +108,7 @@ Provided via Canvas and the course GitHub repository:
 - Lab guides and starter code
 - Lecture slides and live demo walkthroughs
 - Instructor-provided code examples
+- NovaSpark Orders Postman collection (provided with Lab 5)
 
 ### Recommended References
 
@@ -127,87 +129,100 @@ Most weeks: Session 1 is lecture, Session 2 is lab. Exceptions are noted. The "W
 | **1** | Cloud Platform Engineering: what it is and why it matters; the shift from owned hardware to managed services; AWS service categories and the economics of scale; NovaSpark Technologies introduced — company context, cast, and course arc | **Lab 1: AWS Setup** — Install and configure the AWS CLI; connect to AWS Academy Learner Lab; verify identity with `aws sts get-caller-identity`; confirm GitHub Classroom repo access; launch an EC2 instance in the default VPC and SSH in using the Learner Lab key; terminate the instance | [Steve Yegge's "Platforms Rant"](https://gist.github.com/chitchcock/1281611) — the accidentally-published Google+ post that describes Amazon's internal API mandate; gives you the organizational backstory for why AWS was built the way it was | **Lab 1** — four screenshots: CLI output, GitHub repo, SSH connection, terminated instance |
 | **2** | Infrastructure as Code: why manual configuration breaks teams; declarative vs. imperative IaC; Pulumi architecture and state model; deploying EC2, S3, and IAM from Python; the `user_data` pattern for zero-SSH automation | **Lab 2: IaC — EC2, S3, and Automation** — Three-part lab completed outside class time: (1) deploy EC2 + S3, (2) add IAM role + bucket policy, (3) full automation with `user_data` — no SSH required | [Martin Fowler, *Infrastructure as Code*](https://martinfowler.com/bliki/InfrastructureAsCode.html) — the definitive short version; Kief Morris wrote the O'Reilly book on this topic if you want the long version | **Lab 2** — all 3 parts: working Pulumi stack + screenshots *(late submissions accepted with 50% penalty through end of Week 5 only — see Late Work Policy)* |
 | **3** | Network Architecture — full lecture: the traditional datacenter and why cloud changes everything; AWS regions and availability zones; VPC as a software-defined datacenter; public vs. private subnets; CIDR blocks; Internet Gateway, NAT Gateway, and route table logic; security groups vs. NACLs; the bastion host pattern | **Lab 3 Part 1: VPC Architecture** — Deploy a custom VPC with Pulumi; public + private subnets; IGW + NAT Gateway + route tables; explore routing in the console; written reflection on every routing decision. **Destroy at end of class (NAT Gateway cost)** | [AWS, *How Amazon VPC Works*](https://docs.aws.amazon.com/vpc/latest/userguide/how-it-works.html) — short, accurate, and what Linda actually reads when something breaks | No submission — complete Lab 3 Part 1 during class. Part 2 builds on it; unresolved issues from Part 1 should be addressed before Week 4 |
-| **4** | VPC continued: SSH patterns and network security in practice — bastion host mechanics, agent forwarding, and why private instances should never have a public IP *(first 15 min: students rebuild VPC from Week 3 at class start)*. **Serverless Architecture and Lambda:** the case for serverless; Lambda execution model; cold start mechanics and cost implications; API Gateway as a Lambda trigger; when serverless is the wrong answer. *Full API design principles and REST are covered in Week 5 — this session gives you enough context to start Lab 4.* | **Lab 3 Part 2: SSH Patterns and Network Verification** — Rebuild VPC from scratch; load SSH key with agent forwarding; hop from bastion to private instance; prove no direct public IP; test security group port enforcement. **Destroy at end of class.** Most students will finish Lab 3 Part 2 with time to spare — use any remaining time to get Lab 4 started. Lab 4 continues in Week 5's lab session and is due end of Week 5. | [Martin Fowler, *Serverless Architectures*](https://martinfowler.com/articles/serverless.html) — a thorough practitioner perspective on when serverless makes sense and when it doesn't | **Lab 3** (Parts 1 & 2 combined, single submission) — all deliverables due *(late submissions accepted with 25% penalty through end of Week 5 only — see Late Work Policy).* **Lab 4 assigned this week — due end of Week 5** |
-| **5** | APIs: what is an API; REST fundamentals; gRPC and GraphQL; the synchronous failure chain problem; async patterns — SQS, SNS, and EventBridge compared; the deployment spectrum from EC2 through Lambda to containers; API Gateway as the managed front door; choosing the right compute for the job. *This lecture directly deepens Lab 4 — the API design and Gateway concepts covered here are exactly what you're implementing.* | **Continue Lab 4 (Serverless API)** — instructor and TAs available; Lab 4 due end of this week. Cloud Native preview (time permitting): structured walkthrough of what NovaSpark's architecture looks like against the 12-factor app criteria so far; sets up Week 6 lecture. **Labs 2 and 3 final submission deadline — late work accepted with penalty (see Late Work Policy), no submissions accepted after this point** | [Roy Fielding's REST dissertation, Chapter 5](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) — longer read, but if you want to understand why REST is designed the way it is, this is the primary source | **Lab 4 due** (end of Week 5 session) + **Labs 2 & 3 final deadline** |
-| **6** | Cloud Native and the CNCF Ecosystem: what "cloud native" actually means; the full 12-factor app methodology applied to NovaSpark's architecture; CNCF landscape tour; AWS managed services mapped to open-source equivalents | **Lab 5: Cloud Native in Practice** — No AWS infrastructure this week. 12-factor audit of the NovaSpark architecture from Labs 2–4; CNCF landscape exploration; written analysis only | [The 12-Factor App](https://12factor.net/) — read the full manifesto; it's short and every factor will map to something you've already built in this course | **Lab 5** — written audit + CNCF exploration |
-| **7** | Architecture synthesis: connecting networking, serverless compute, and APIs into a coherent system view; what makes a service "production-ready" before you've read about the Well-Architected Framework; preview of storage and data patterns for Week 9 | **No new lab deliverable** — project preparation: sketch your capstone data model and choose your project option; instructor and TAs available for design Q&A | [Werner Vogels, *Eventually Consistent*](https://www.allthingsdistributed.com/2008/12/eventually_consistent.html) — short, readable, and one of the most cited pieces on distributed systems design from a practitioner | No formal deliverable — project option and data model sketch expected |
-| **8** | The AWS Well-Architected Framework: the six pillars; how each pillar maps to decisions already made in Labs 2–5; common gaps in student architectures; what "production-ready" actually means | **Lab 6: WAF Audit** — No AWS infrastructure. Written audit of your own architecture from Labs 2–5: score each of the six WAF pillars against your own work; propose one concrete improvement per unsatisfied pillar | [AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html) — the full whitepaper; more useful after you've built something than before | **Lab 6** — written WAF audit |
-| **9** | Storage and Databases: storage taxonomy (object vs. database); management spectrum from self-managed to fully managed; database type dimension (relational, key-value, document, time-series); DynamoDB deep dive — access patterns, partition keys, sort keys; containers and EKS survey; **second half: capstone project brief and Q&A** | **Lab 7: Project Kickoff** — Add a DynamoDB table to your existing Lab 4 Lambda stack; implement the `POST` route end-to-end with a real DynamoDB write; declare your capstone project scope in writing | [DeCandia et al., *Dynamo: Amazon's Highly Available Key-value Store*](https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf) — the original paper behind DynamoDB; more accessible than it looks | **Lab 7** — DynamoDB write working + project scope declaration |
-| **10** | **No new lecture — project week.** Instructor and TAs available the full session. | **Project working session** — Full class time dedicated to capstone work. Goal by end of week: all 3 required API routes working, `pulumi up` runs clean | [CNCF Case Studies](https://www.cncf.io/case-studies/) — real companies describing how they use the same tools you've been learning; good fuel for the capstone reflection | No formal deliverable — working prototype expected by end of session |
-| **11** | **Finals week — no class sessions.** | — | — | **Capstone project due** (exact date announced in Week 9): video demo + written reflection + GitHub repo |
+| **4** | VPC continued: SSH patterns and network security in practice — bastion host mechanics, agent forwarding, and why private instances should never have a public IP *(first 15 min: students rebuild VPC from Week 3 at class start)*. Serverless preview: Lambda execution model overview, API Gateway as a front door — enough context to start Lab 4. *Full serverless depth is covered in Week 5.* | **Lab 3 Part 2: SSH Patterns and Network Verification** — Rebuild VPC from scratch; load SSH key with agent forwarding; hop from bastion to private instance; prove no direct public IP; test security group port enforcement. **Destroy at end of class.** Use any remaining time to start Lab 4 — it continues in Week 5 and is due end of Week 5. | [Martin Fowler, *Serverless Architectures*](https://martinfowler.com/articles/serverless.html) — a thorough practitioner perspective on when serverless makes sense and when it doesn't | **Lab 3** (Parts 1 & 2 combined, single submission) — all deliverables due *(late submissions accepted with 25% penalty through end of Week 5 only — see Late Work Policy).* **Lab 4 assigned this week — due end of Week 5** |
+| **5** | **Serverless Computing — Lambda, API Gateway, and Cold Start Analysis.** Lambda execution model in depth; cold start mechanics and how to measure them; the module-level vs. handler-level execution model; API Gateway as a Lambda trigger; IAM execution roles and least privilege; the event object abstraction. *This session provides the depth behind the Lab 4 hands-on work.* | **Lab 4: Serverless API** — Deploy a Lambda function with API Gateway using Pulumi; capture and analyze a cold start in CloudWatch; examine the API Gateway event object; analyze the IAM execution role. Start in class, finish as homework. **Labs 2 and 3 final submission deadline — no submissions accepted after this point** | [Hellerstein et al., *Serverless Computing: One Step Forward, Two Steps Back*](https://arxiv.org/abs/1812.03651) — the academic critique of the FaaS model; the specific limitations named here are exactly what you will observe in the lab | **Lab 4 due** (end of Week 5) + **Labs 2 & 3 final deadline** |
+| **6** | **APIs — Design, Patterns, and Async Architecture.** What is an API and why every service boundary is one; REST fundamentals and RESTful design principles (nouns not verbs, parameter placement, status codes); gRPC and GraphQL compared; the synchronous chain failure problem; async patterns — SQS, SNS, EventBridge; streaming APIs; API security layers — OAuth, API Gateway auth, WAF preview. *Directly sets up Lab 5: you will implement the async order pipeline you design in this lecture.* | **Lab 5: Async Order API** — Extend the Pulumi stack with SQS; implement the order submission pipeline (API Gateway → Lambda → SQS → processor Lambda); apply RESTful URL design principles to the full NovaSpark Order API; explain the 202 Accepted decision. Start in class, finish as homework. Postman introduced as API testing tool. | [Roy Fielding's REST dissertation, Chapter 5](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) — longer read, but if you want to understand why REST is designed the way it is, this is the primary source | **Lab 5 due** |
+| **7** | **Storage and Databases — DynamoDB Deep Dive.** Cloud storage taxonomy (object vs. block vs. database); management spectrum from self-managed to fully managed; database types (relational, key-value, document); DynamoDB access patterns, partition keys, and sort keys; the `boto3` DynamoDB API; Scan vs. Query tradeoffs. | **Lab 6: Storage Backend** — Wire DynamoDB into the NovaSpark Order API; connect the processor Lambda to write every order to the database; implement `GET /orders/{id}` and `GET /orders` using real DynamoDB reads. The full async pipeline — API Gateway → Lambda → SQS → Lambda → DynamoDB — is running end-to-end by the end of this lab. | [DeCandia et al., *Dynamo: Amazon's Highly Available Key-value Store*](https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf) — the original paper behind DynamoDB; more accessible than it looks | **Lab 6 due** |
+| **8** | **The AWS Well-Architected Framework.** The six pillars; how each pillar maps to decisions already made in Labs 2–6; common gaps in student architectures; what "production-ready" actually means | **Lab 7: WAF Audit** — Written evaluation of your own NovaSpark Order API architecture against the six WAF pillars; identify real gaps; propose one concrete improvement per unsatisfied pillar. No new AWS infrastructure this week. | [AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html) — the full whitepaper; more useful after you've built something than before | **Lab 7** — written WAF audit |
+| **9** | **Cloud Native and the CNCF Ecosystem.** What "cloud native" actually means; the 12-factor app methodology applied to the NovaSpark Order API; CNCF landscape tour; containers and EKS survey; where your current architecture stands against modern cloud-native patterns. | **Project working session** — Class time dedicated to course project extension work. Goal: at least one extension route working end-to-end (`pulumi up` clean, data persisting). See the [Project Roadmap](../../Project-Roadmap/undergrad/project-roadmap.md) for extension options and the full final deliverable description. | [The 12-Factor App](https://12factor.net/) — read the full manifesto; every factor maps to something you've already built | No formal deliverable — working prototype with at least one extension expected by end of session |
+| **10** | **No new lecture — project week.** Instructor and TAs available the full session. | **Project working session** — Full class time dedicated to course project work. Goal by end of week: all 3 required API routes working, at least one extension complete, `pulumi up` runs clean | [CNCF Case Studies](https://www.cncf.io/case-studies/) — real companies describing how they use the same tools you've been learning; good fuel for the project reflection | No formal deliverable — working prototype expected by end of session |
+| **11** | **Finals week — no class sessions.** | — | — | **Course project due** (exact date announced in Week 9): video demo + written reflection + GitHub repo |
 
 ---
 
-## Capstone Project
+## Course Project
 
 ### Overview
 
-You will design, build, and deploy a small but real cloud-native service for NovaSpark Technologies. The project brings together every major concept in the course: Infrastructure as Code, API design, serverless compute, persistent storage, and the Well-Architected Framework.
+The **NovaSpark Order API** is the course project — a serverless REST API that accepts customer orders, processes them asynchronously through a message queue, and persists them to a managed database. The core API is defined; you are not choosing what to build. What you control is which extensions you implement and how far you go.
 
-**The capstone is not a new project — it is a direct extension of Lab 4.** Do not delete your Lab 4 work. Your Lambda function and API Gateway stack from Week 4 is the starting point. You are adding DynamoDB, completing the remaining routes, and hardening the implementation.
+The project is not a separate deliverable — it grows directly out of the lab work. Lab 5 builds the async submission pipeline. Lab 6 adds the storage backend. The final weeks give you time to extend, harden, and demonstrate what you built.
 
-Simple and correct beats ambitious and half-working. A clean three-route API deployed entirely through Pulumi is a better submission than a sprawling system that requires manual steps to run.
+See the [Project Roadmap](../../Project-Roadmap/undergrad/project-roadmap.md) for a full description of the API spec, the extension menu, and what good looks like at demo time.
+
+Simple and correct beats ambitious and half-working. A clean three-route API with a thoughtful reflection is a better submission than a complex system that requires manual steps to run.
+
+### Core API (Required)
+
+After Lab 6, your stack must have the following working end-to-end:
+
+| Route | Status Code | Description |
+|-------|-------------|-------------|
+| `POST /orders` | 202 Accepted | Submit an order (async, via SQS queue) |
+| `GET /orders/{id}` | 200 / 404 | Retrieve a specific order by ID from DynamoDB |
+| `GET /orders` | 200 | List all orders |
+
+These three routes are implemented through Labs 5 and 6. They are the baseline. Without them working, you have no project to extend.
+
+### Extensions (Choose at Least One)
+
+The final weeks are for extensions. You are required to implement at least one; more earns more credit.
+
+| Extension | What You Build |
+|-----------|---------------|
+| `PATCH /orders/{id}` | Update order status through the API |
+| `DELETE /orders/{id}` | Soft-cancel orders (set `status: cancelled`, record stays in DB) |
+| Status filtering | `GET /orders?status=received` returns only matching orders |
+| Authentication | Lambda authorizer validates a token before any route executes |
+| Order notifications | SNS publishes a message when an order is placed |
+| Pagination | `GET /orders` returns pages of results with a cursor |
+| Custom extension | Propose your own — instructor approval required by Week 9 |
 
 ### Technical Requirements
 
 | Requirement | Details |
 |-------------|---------|
-| Serverless compute | At minimum 2 Lambda functions (or one handling multiple routes) |
-| API endpoint | API Gateway HTTP API with at least 3 routes: `POST`, `GET` (list), `GET` (by ID) |
+| Async order submission | `POST /orders` Lambda → SQS queue → processor Lambda pipeline |
 | Persistent storage | DynamoDB table — data survives between API calls |
-| Infrastructure as Code | Entire stack deployed with Pulumi — no manually created resources |
+| Full stack via IaC | Entire stack deployed with Pulumi — no manually created resources |
 | Clean teardown | `pulumi destroy` runs without errors |
-| IAM least privilege | Lambda role scoped to only what it needs — no `AdministratorAccess` |
-
-### Project Options
-
-Choose one NovaSpark internal service to build:
-
-- **Status Event Service** — log and retrieve system health events (the service the course narrative has been building toward)
-- **Task Tracker** — create and retrieve engineering tasks
-- **Product Inventory** — manage NovaSpark product catalog items
-- **Feedback Collector** — submit and retrieve internal feedback
-- **Student-proposed idea** — submit a one-paragraph description for instructor approval by end of Week 9 lab
+| At least one extension | One meaningful route or feature beyond the Lab 6 baseline |
 
 ### Build Timeline
 
 | Milestone | When |
 |-----------|------|
-| Choose project option; sketch data model | Before Week 9 session |
-| `POST` route writing to DynamoDB working | End of Week 9 lab |
-| All 3 required routes working; `pulumi up` clean | End of Week 10 session |
+| `POST /orders` + SQS async pipeline working | End of Lab 5 (Week 6) |
+| `GET /orders/{id}` + `GET /orders` + DynamoDB working | End of Lab 6 (Week 7) |
+| Extension chosen and implementation started | End of Week 9 session |
+| All core routes + at least one extension working | End of Week 10 session |
 | Video demo recorded; reflection written | Early Week 11 |
 
-### Deliverables
+### Final Deliverables
 
-**Video Demo (5 minutes max)**
-- `pulumi up` running and completing successfully
-- At least 3 `curl` calls showing all required routes working end-to-end
-- Explain one architectural decision you made
-- `pulumi destroy` completing cleanly
+**1. A working API** — deployed through Pulumi, all core routes functional, at least one extension implemented. `pulumi up` and `pulumi destroy` both run cleanly.
 
-**Written Reflection (1–2 pages)**
-- WAF self-assessment: two pillars you addressed well (with specific examples from your code or configuration), one pillar you didn't address and how you'd fix it
-- One thing that worked differently than you expected
-- What you'd build next if given another sprint
+**2. A five-minute demo video** — show `pulumi up` completing, run the Postman collection (or curl) against your live API demonstrating all core routes and your extension, explain one architectural decision you made, and show `pulumi destroy` cleaning up.
+
+**3. A written WAF reflection (1–2 pages)** — two pillars you addressed well (with specific examples from your code or configuration), one pillar you did not address and what you would do to fix it, and one thing that worked differently than you expected.
 
 ### Project Rubric
 
 | Area | Full Credit | Partial Credit | No Credit |
 |------|-------------|----------------|-----------|
-| **Working demo (40 pts)** | All 3 routes work, data persists, `pulumi up/destroy` clean | 1–2 routes work or minor issues | Nothing works or stack won't deploy |
+| **Working demo (35 pts)** | All 3 core routes work + at least one extension, data persists, `pulumi up/destroy` clean | Core routes work, no extension; or minor issues | Nothing works or stack won't deploy |
 | **IaC completeness (20 pts)** | All resources in Pulumi | Most in code, 1–2 manual resources | Console-only, no Pulumi |
 | **Storage integration (15 pts)** | DynamoDB reads/writes correctly, table defined in Pulumi | Table exists but read or write broken | No DynamoDB or hardcoded data only |
-| **WAF reflection (15 pts)** | Two pillars with specific code/config examples; one gap with a concrete fix | Pillars named but vague | Generic WAF description, not connected to your project |
+| **WAF reflection (20 pts)** | Two pillars with specific code/config examples; one gap with a concrete fix | Pillars named but vague | Generic WAF description, not connected to your project |
 | **Video clarity (10 pts)** | System shown working; one architectural decision explained clearly | System shown, no explanation | No video or system not demonstrated |
 
-**Deductions:** Manually created resources that should be in Pulumi (−10 pts) · IAM uses `AdministratorAccess` (−10 pts) · Video over 5 minutes (−5 pts) · Undisclosed AI use in reflection (−10 pts)
+**Deductions:** Manually created resources that should be in Pulumi (−10 pts) · Video over 5 minutes (−5 pts) · Undisclosed AI use in reflection (−10 pts)
 
 ---
 
 ## Grading
 
-This course has no exams. All grades come from lab work and the capstone project.
+This course has no exams. All grades come from lab work and the course project.
 
 | Assignment | Weight |
 |------------|--------|
@@ -215,9 +230,10 @@ This course has no exams. All grades come from lab work and the capstone project
 | Lab 2: Infrastructure as Code | 15% |
 | Lab 3: VPC Architecture (Parts 1 & 2) | 15% |
 | Lab 4: Serverless API | 10% |
-| Lab 5: Cloud Native in Practice | 10% |
-| Lab 6: Well-Architected Framework Audit | 10% |
-| Capstone Project (Lab 7 + video demo + reflection) | 35% |
+| Lab 5: Async Order API | 10% |
+| Lab 6: Storage Backend | 10% |
+| Lab 7: Well-Architected Audit | 5% |
+| Course Project (video demo + reflection) | 30% |
 | **Total** | **100%** |
 
 ### Grading Scale
@@ -237,7 +253,7 @@ This course has no exams. All grades come from lab work and the capstone project
 
 ### Late Work Policy
 
-Each student receives **5 late days** at the start of the term. The late day bank applies to Labs 1, 4, 5, and 6. (Lab 4 is the Serverless API lab — assigned end of Week 4, due end of Week 5 — and is the foundation of the capstone, so use late days here thoughtfully.) Draw from it freely for those labs — once exhausted, late submissions receive a 50% penalty on day 1 and are not accepted after that.
+Each student receives **5 late days** at the start of the term. The late day bank applies to Labs 1, 4, 5, 6, and 7. Draw from it freely for those labs — once exhausted, late submissions receive a 50% penalty on day 1 and are not accepted after that.
 
 **Labs 2 and 3 follow a different policy — the late day bank does not apply to them.** These two labs span the first half of the course and are direct prerequisites for everything that follows. To give students who fall behind a structured path to partial credit, Labs 2 and 3 have a hard checkpoint at the end of Week 5:
 
@@ -248,7 +264,7 @@ Each student receives **5 late days** at the start of the term. The late day ban
 
 The lower penalty for Lab 3 reflects that it runs across two class sessions (Weeks 3–4), is the most technically complex lab in the first half of the course, and is submitted as a single combined deliverable at the end of Week 4. The Week 5 checkpoint is not an expected submission window — it is a last-chance grace window. Students who plan to submit Labs 2 or 3 late are accepting a meaningful grade penalty; this policy exists to give you a path forward, not an excuse to deprioritize those labs.
 
-**One-off extensions are not available for any lab.** The late day bank and the Week 5 checkpoint provide all the flexibility built into this course. The capstone project does not accept late submissions under any circumstances.
+**One-off extensions are not available for any lab.** The late day bank and the Week 5 checkpoint provide all the flexibility built into this course. The course project does not accept late submissions under any circumstances.
 
 ---
 
@@ -261,12 +277,13 @@ The lower penalty for Lab 3 reflects that it runs across two class sessions (Wee
 | EC2 + NAT Gateway (Labs 2–3) | ~$5–10 |
 | Lambda + API Gateway | ~$0 (free tier) |
 | DynamoDB | ~$0 (free tier) |
+| SQS | ~$0 (free tier) |
 | S3 | ~$1 |
 | **Total expected** | **~$6–11** |
 
 Labs 3 Part 1 and Part 2 require destroying the VPC at the end of class. The NAT Gateway costs approximately $0.045/hour — leaving it running overnight wastes ~$1/day and eats into your project budget. The `pulumi destroy` screenshot in those labs is how you prove cleanup happened.
 
-Running rules: always run `pulumi destroy` when done with any lab that uses EC2 or NAT Gateway. Lambda, API Gateway, and DynamoDB are free tier — no destroy urgency, but practice the habit. Monitor your balance in the AWS Academy Learner Lab panel. If you see an unexpected spike, email the instructor immediately.
+Running rules: always run `pulumi destroy` when done with any lab. Lambda, API Gateway, DynamoDB, and SQS are free tier — no cost urgency, but practice the habit every lab. Monitor your balance in the AWS Academy Learner Lab panel. If you see an unexpected spike, email the instructor immediately.
 
 ---
 
@@ -283,9 +300,9 @@ At the start of the term you will receive a GitHub Classroom invitation that cre
 /2-IaC/
 /3-VPC/
 /4-Serverless/
-/5-CloudNative/
-/6-WAF/
-/7-Storage-Kickoff/
+/5-API/
+/6-Storage/
+/7-WAF/
 /project/
 ```
 
@@ -299,8 +316,8 @@ Canvas has one assignment per lab. Submit the link to your GitHub repo directory
 
 | Deliverable | Why Canvas |
 |-------------|------------|
-| Capstone project reflection (1–2 pages, PDF) | Inline SpeedGrader feedback |
-| Capstone video demo link | YouTube/Loom link — not a repo artifact |
+| Course project reflection (1–2 pages, PDF) | Inline SpeedGrader feedback |
+| Course project video demo link | YouTube/Loom link — not a repo artifact |
 
 ### Submission Summary
 
@@ -308,8 +325,8 @@ Canvas has one assignment per lab. Submit the link to your GitHub repo directory
 |------|-------|
 | Pulumi code + screenshots + written lab analysis | GitHub repo directory |
 | Lab completion confirmation | Canvas (GitHub link) |
-| Capstone reflection PDF | Canvas (direct) |
-| Capstone video link | Canvas (direct) |
+| Course project reflection PDF | Canvas (direct) |
+| Course project video link | Canvas (direct) |
 
 ---
 
@@ -341,7 +358,7 @@ This course follows all university, college, and department policies:
 Up to 10 extra credit points are available:
 
 **Technical Blog Post (+5 points)**
-Write a detailed post (minimum 1,500 words) about your capstone project — architecture, decisions, lessons learned, code examples. Published on Medium, dev.to, or a personal blog. Submit link by end of Week 11.
+Write a detailed post (minimum 1,500 words) about your course project — architecture, decisions, lessons learned, code examples. Published on Medium, dev.to, or a personal blog. Submit link by end of Week 11.
 
 **Advanced Infrastructure (+5 points, choose one)**
 - Implement S3 backend for Pulumi state management with documentation
@@ -356,7 +373,7 @@ Every week in this course, you will build something. Not read about it, not watc
 
 What success looks like here is not a perfect grade on every lab. It is showing up consistently, debugging systematically, and understanding what you built well enough to explain it in a 5-minute video. Students who do well in CS 463 are not always the ones who knew the most coming in. They are the ones who stayed current week to week, asked questions before they were buried, and treated each lab as the foundation for the next one — because it is.
 
-The students who struggle are almost always the ones who let a week slip, told themselves they'd catch up, and then found themselves two labs behind with the capstone on the horizon. There is no version of this course where that ends well.
+The students who struggle are almost always the ones who let a week slip, told themselves they'd catch up, and then found themselves two labs behind with the project on the horizon. There is no version of this course where that ends well.
 
 If a lab is taking longer than expected, reach out. If a concept isn't clicking, come to office hours. If you're falling behind, say something early — there is much more that can be done at week two than at week nine.
 

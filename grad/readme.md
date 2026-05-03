@@ -11,7 +11,7 @@
 
 ## Course Description
 
-An graduate-focused study of the principles, architectures, and tools used to design and operate modern cloud-native systems. Students examine the technical and organizational tradeoffs behind cloud infrastructure decisions — from networking and storage to serverless compute and distributed systems patterns — through weekly seminar discussions, hands-on configuration labs, and a substantial written architecture deliverable.
+A graduate-focused study of the principles, architectures, and tools used to design and operate modern cloud-native systems. Students examine the technical and organizational tradeoffs behind cloud infrastructure decisions — from networking and storage to serverless compute and distributed systems patterns — through weekly seminar discussions, hands-on configuration labs, and a substantial written architecture deliverable.
 
 This course is the graduate counterpart to an undergraduate offering in cloud platform engineering. Where the undergraduate version emphasizes hands-on construction — writing infrastructure code, deploying services, and building functioning systems from scratch — CS 545 shifts the emphasis to **architectural investigation, critical evaluation, and written justification**. Students engage directly with primary literature from industry and academia, examine the broader impacts of cloud computing on how modern software systems are designed and operated, and develop the reasoning skills expected of engineers, architects, and technical leads.
 
@@ -57,7 +57,7 @@ Students will:
 - Evaluate cloud architectures against professional standards (AWS Well-Architected Framework, 12-factor app, distributed systems principles)
 - Engage with primary literature from industry research and engineering practice to understand how cloud computing has changed what is possible and what is expected
 - Apply distributed systems concepts — consistency models, failure modes, CAP theorem — to concrete infrastructure decisions
-- Configure and reason about AWS managed services: EC2, VPC, Lambda, DynamoDB, S3, IAM, API Gateway, CloudWatch
+- Configure and reason about AWS managed services: EC2, VPC, Lambda, DynamoDB, SQS, S3, IAM, API Gateway, CloudWatch
 - Produce a professional-grade Architecture Design Document from requirements through trade-off analysis
 - Develop technical communication skills through a recorded project demo
 
@@ -81,10 +81,11 @@ Students completing this course will be able to:
 ### Required
 
 - **AWS Academy Learner Lab Access** — provided by instructor; sandbox AWS environment with **$50 in credits** per student
-- **Infrastructure as Code (IaC) Tooling** — this course uses **Pulumi**, a modern IaC tool that lets you define and provision cloud resources using standard programming languages like Python. This is a deliberate choice: unlike configuration-focused tools such as Terraform (which use a proprietary domain-specific language), Pulumi takes a developer-first approach — your infrastructure code looks and behaves like regular Python, which makes it easier to reason about, debug, and extend. No prior Pulumi experience is required; starter templates are provided for all labs. ([Pulumi docs](https://www.pulumi.com/docs/))
+- **Infrastructure as Code (IaC) Tooling** — this course uses **Pulumi**, a modern IaC tool that lets you define and provision cloud resources using standard programming languages like Python. Starter templates are provided for all labs. ([Pulumi docs](https://www.pulumi.com/docs/))
 - **Python 3.8+** — required to run Pulumi programs; no Python programming from scratch required
 - **AWS CLI** — free; installation covered in Week 1
 - **Git + GitHub account** — free; used for lab submission
+- **Postman** — free API testing tool; introduced in Lab 6. [Download here](https://www.postman.com/downloads/)
 
 ### Development Tools
 
@@ -98,6 +99,7 @@ Provided via Canvas and the course GitHub repository:
 - Lecture slides and annotated architecture diagrams
 - Weekly reading links (primary source + optional supplements)
 - Architecture Design Document template and rubric
+- NovaSpark Orders Postman collection (provided with Lab 6)
 
 ### Recommended References
 
@@ -113,20 +115,20 @@ Provided via Canvas and the course GitHub repository:
 
 ## 10-Week Schedule
 
-Each week follows the same three-block structure. The table below shows the lecture topic, what you should read before class (with direct links), the discussion angle for Block 2, and what is due. Lab guides and detailed rubrics are distributed on Canvas. Optional items in the reading column are recommended but not required for discussion.
+Each week follows the same three-block structure. The table below shows the lecture topic, what you should read before class, the discussion angle for Block 2, and what is due. Lab guides and detailed rubrics are distributed on Canvas. Optional items in the reading column are recommended but not required for discussion.
 
 | Week | Lecture (Block 1) | Read Before Class | Discussion Focus (Block 2) | Lab / Workshop (Block 3) | Due End of Week |
 |------|-------------------|-------------------|---------------------------|--------------------------|-----------------|
-| **1** | Cloud Fundamentals: the shift from owned hardware to managed services; AWS service categories; the economics of scale that make cloud different | **Recommended — read after class this week:** [Barroso, Hölzle & Ranganathan, *The Datacenter as a Computer*, 3rd ed.](https://link.springer.com/book/10.1007/978-3-031-01761-2) (free Open Access, Springer — Ch. 1–2) | Ad hoc discussion — no pre-read required for Week 1. Instructor introduces the paper's core argument in class: what changes when you treat a datacenter as a single computer? Does warehouse-scale thinking apply to a company NovaSpark's size? | AWS CLI setup, Learner Lab orientation, GitHub Classroom repo confirmation, launch and SSH into an EC2 instance using the Learner Lab key, terminate the instance | **Lab 1** — setup confirmation + context paragraph |
+| **1** | Cloud Fundamentals: the shift from owned hardware to managed services; AWS service categories; the economics of scale that make cloud different | **Recommended — read after class this week:** [Barroso, Hölzle & Ranganathan, *The Datacenter as a Computer*, 3rd ed.](https://link.springer.com/book/10.1007/978-3-031-01761-2) (free Open Access, Springer — Ch. 1–2) | Ad hoc discussion — no pre-read required for Week 1. Instructor introduces the paper's core argument: what changes when you treat a datacenter as a single computer? Does warehouse-scale thinking apply to a company NovaSpark's size? | AWS CLI setup, Learner Lab orientation, GitHub Classroom repo confirmation, launch and SSH into an EC2 instance, terminate the instance | **Lab 1** — setup confirmation + context paragraph |
 | **2** | Infrastructure as Code: why configuration drift breaks teams; declarative vs. imperative IaC; Pulumi architecture and state model | [Fowler, *Infrastructure as Code* (martinfowler.com)](https://martinfowler.com/bliki/InfrastructureAsCode.html) · optional: [Pulumi — How Pulumi Works (docs)](https://www.pulumi.com/docs/concepts/) | Where does IaC create discipline, and where does it create new failure modes? What does Fowler say that practitioners often skip? | Read and annotate provided Pulumi template; modify instance type + S3 bucket; write 1-page justification of what the template does and what would break without the IAM role | **Lab 2** — annotated template + justification + context paragraph |
 | **3** | Cloud Networking: VPC architecture, subnet isolation, routing table logic, NAT Gateway cost model, security groups vs. NACLs | [AWS, *VPC Security Best Practices* (AWS Docs)](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-best-practices.html) · optional: [Advanced VPC Design (re:Invent, 60 min)](https://www.youtube.com/watch?v=fnxXNZdf6ew) | Why does Linda care so much about the network? What does the reading say about the blast radius of a misconfigured VPC? | Deploy provided VPC Pulumi template; trace route tables in console; draw network diagram with annotations; write 1-page routing justification. **Destroy at end of class (NAT Gateway cost)** | **Lab 3** — network diagram + routing justification + context paragraph |
-| **4** | Serverless Computing: Lambda execution model, cold starts, API Gateway as an integration layer, event triggers, synchronous vs. async invocation, IAM execution roles (Thread 2 of 3), when serverless is the wrong answer | [Hellerstein et al., *Serverless Computing: One Step Forward, Two Steps Back* (arXiv 2019)](https://arxiv.org/abs/1902.03383) · optional: [Lambda Under the Hood (re:Invent, 30 min)](https://www.youtube.com/watch?v=xmacMfbrG28) · optional: [Eismann et al., *The State of Serverless Applications* (2021)](https://arxiv.org/abs/2010.14023) | Hellerstein identifies five formal limitations of serverless. Which still hold in 2025? For NovaSpark's workload (small team, variable load, API-driven), do they apply? **Prediction exercise:** DynamoDB integration is next week — predict which I/O bottleneck and slow-storage limitations you expect to encounter. You will evaluate your predictions empirically in Lab 5. | Deploy provided Lambda + API Gateway Pulumi template; function returns hardcoded JSON; hit endpoint with `curl`; measure cold start vs. warm latency; write 1-page performance analysis and evaluate execution role scope | **Lab 4** — deployed Lambda + API Gateway + cold start analysis + context paragraph |
-| **5** | Storage: taxonomy of storage options; object vs. database storage; management spectrum (self-managed → RDS → DynamoDB); DB type dimension (relational, key-value, document, time-series); DynamoDB deep dive — access patterns, partition keys, sort keys; back-reference: how the execution role from Lab 4 grants DynamoDB access without hardcoded credentials | [DeCandia et al., *Dynamo: Amazon's Highly Available Key-value Store* (SOSP 2007)](https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf) · optional: [DynamoDB Advanced Design Patterns (re:Invent, 60 min)](https://www.youtube.com/watch?v=yvBR71D0nAQ) | DeCandia's team chose availability over consistency. Where is that tradeoff visible in DynamoDB's design, and how should NovaSpark think about it for a status event log? Revisit the Hellerstein predictions you made in Week 4 — did your cold start and I/O observations match what the paper predicted? | Extend your Lab 4 Pulumi stack to add a DynamoDB table; design access patterns first (written); configure PITR; connect Lambda to DynamoDB using the execution role from Lab 4 — no new credentials needed | **Lab 5** — extended Pulumi stack + access pattern design + DynamoDB table + RTO/RPO analysis + context paragraph |
-| **6** | APIs & Event-Driven Architecture: REST contract model and where it struggles at scale; gRPC vs. REST for service-to-service communication; the synchronous coupling problem; SQS, SNS, and EventBridge compared; fan-out design; idempotency; the hidden costs of tight coupling | [Vogels, *Eventually Consistent* (allthingsdistributed.com, 2008)](https://www.allthingsdistributed.com/2008/12/eventually_consistent.html) · optional: [Fielding, *Architectural Styles and the Design of Network-based Software Architectures*, Ch. 5 (REST)](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) | Vogels argues eventual consistency is not a bug — it's a design choice. How does that reframe the conversation about when to use a synchronous REST API vs. an event-driven approach? What makes the synchronous coupling problem a reliability issue, not just a style preference? | Workshop (no AWS): design the external API contract and internal event-driven extension for NovaSpark's order service; choose between REST / gRPC for the client-facing API and SQS / SNS / EventBridge for fan-out to payment, inventory, and notification services; annotate diagram with component justifications | **Workshop 6** — architecture diagram + component justifications + context paragraph |
-| **7** | Observability and Monitoring: the three pillars (logs, metrics, traces); CloudWatch architecture; alert design; SLIs, SLOs, and error budgets; how observability changes incident response | [SRE Book, Ch. 6: *Monitoring Distributed Systems* (free online)](https://sre.google/sre-book/monitoring-distributed-systems/) · optional: [Google SRE Book — full text (free)](https://sre.google/sre-book/table-of-contents/) | What does Google's SRE team mean by "symptoms not causes" in alerting? How would you apply that to NovaSpark's alerting setup? | No Block 3 lab — time used for ADD peer review and Q&A. **ADD due end of week.** | **Architecture Design Document** (25%) — no late submissions |
-| **8** | Security and IAM: identity vs. access; IAM roles, policies, and the principle of least privilege; the confused deputy problem; S3 bucket policies; what "production-ready" security actually means | [Felten & Schneider, *The Confused Deputy* (1988, 2 pages)](https://dl.acm.org/doi/10.1145/74851.74857) · [AWS IAM Best Practices (AWS Docs)](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html) · optional: [AWS re:Invent — IAM Best Practices (video)](https://www.youtube.com/watch?v=YQsK4MtsELU) | What makes the confused deputy problem subtle? Where in your own ADD could this class of vulnerability appear? | Project work session: initialize Pulumi stack, define DynamoDB table, stub at least one Lambda route. Submit a one-paragraph project scope statement — which service you're building, which project option you've chosen, and any divergence from your ADD plan. Instructor will confirm or flag concerns before Week 9. | Project scope statement (required, not separately graded — confirms you're on track before the final two weeks) |
-| **9** | Cost Optimization and the Well-Architected Framework: the six WAF pillars; cost as an architectural decision; right-sizing; reserved capacity vs. on-demand; what the WAF misses | [AWS, *Cost Optimization Pillar* (Well-Architected Framework)](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/welcome.html) · optional: [AWS Well-Architected Tool overview (docs)](https://docs.aws.amazon.com/wellarchitected/latest/userguide/intro.html) | The WAF is comprehensive but it's also a vendor document. Where does it help you think clearly, and where might it lead you toward AWS-specific solutions when something simpler would work? | Complete all 3 required API routes; cost analysis using AWS Pricing Calculator at 3 traffic levels (100 / 10K / 1M req/day) | **Lab 9 deliverable** — all routes working + cost analysis write-up (graded as part of Final Project) |
-| **10** | Emerging Topics: containers and Kubernetes in context; where serverless and container-based architectures fit together; what has changed in cloud infrastructure in the last five years and what is likely to change next | Student-selected: one recent practitioner post or talk on a cloud topic you want to discuss (shared on Canvas by Wednesday) | Open format — you bring the reading this week. What is worth understanding about where cloud is heading, and what would you tell Janet about containers given everything NovaSpark has built? | Final project work session and overflow. **Final project due end of week.** | **Final Project** (25%) — no late submissions |
+| **4** | Serverless Computing: Lambda execution model, cold starts, API Gateway as an integration layer, event triggers, synchronous vs. async invocation, IAM execution roles, when serverless is the wrong answer | [Hellerstein et al., *Serverless Computing: One Step Forward, Two Steps Back* (arXiv 2019)](https://arxiv.org/abs/1902.03383) · optional: [Lambda Under the Hood (re:Invent, 30 min)](https://www.youtube.com/watch?v=xmacMfbrG28) | Hellerstein identifies five formal limitations of serverless. Which still hold today? For NovaSpark's workload — small team, variable load, API-driven — do they apply? **Prediction exercise:** DynamoDB integration is next week — predict which I/O bottleneck and slow-storage limitations you expect to observe. You will evaluate your predictions in Lab 5. | Deploy provided Lambda + API Gateway Pulumi template; hit endpoint with `curl`; measure cold start vs. warm latency; write 1-page performance analysis and evaluate execution role scope | **Lab 4** — deployed Lambda + API Gateway + cold start analysis + context paragraph |
+| **5** | Storage: taxonomy of storage options; object vs. database storage; management spectrum (self-managed → RDS → DynamoDB); DB type dimension (relational, key-value, document, time-series); DynamoDB deep dive — access patterns, partition keys, sort keys; back-reference: how the execution role from Lab 4 grants DynamoDB access without hardcoded credentials | [DeCandia et al., *Dynamo: Amazon's Highly Available Key-value Store* (SOSP 2007)](https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf) · optional: [DynamoDB Advanced Design Patterns (re:Invent, 60 min)](https://www.youtube.com/watch?v=yvBR71D0nAQ) | DeCandia's team chose availability over consistency. Where is that tradeoff visible in DynamoDB's design today, and how should NovaSpark think about it for the order API? Revisit the Hellerstein predictions from Week 4 — did your cold start and I/O observations match? | Extend Lab 4 Pulumi stack to add a DynamoDB table; design the order data model and access patterns (written, before touching code); configure the table; connect Lambda to DynamoDB using the existing execution role. **This is your storage foundation — the order table you design here is the one you will query in Lab 6.** | **Lab 5** — extended Pulumi stack + order data model design + DynamoDB table + RTO/RPO analysis + context paragraph |
+| **6** | APIs and Event-Driven Architecture: REST contract model and RESTful design principles; gRPC vs. REST; the synchronous coupling problem and when it becomes a reliability issue; SQS, SNS, and EventBridge compared; async fan-out design; idempotency; the hidden costs of tight coupling | [Vogels, *Eventually Consistent* (allthingsdistributed.com, 2008)](https://www.allthingsdistributed.com/2008/12/eventually_consistent.html) · optional: [Fielding, *Architectural Styles*, Ch. 5](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) | Vogels argues eventual consistency is a design choice, not a bug. What does that mean for how NovaSpark should handle the moment between a customer placing an order and the order appearing in DynamoDB? Where in the async pipeline does consistency break down, and is that acceptable? | **Lab 6: Async Order API** — Add an SQS queue to your Pulumi stack; implement the order submission Lambda (POST /orders → 202 Accepted); implement the processor Lambda (SQS trigger → DynamoDB write); stub the remaining routes (GET, PATCH, DELETE) with 501 responses. Test the full pipeline end-to-end with Postman. Written: justify the async decision and explain what changes if the fulfillment service becomes synchronous. | **Lab 6** — full async pipeline deployed + written async justification + context paragraph |
+| **7** | Observability and Monitoring: the three pillars (logs, metrics, traces); CloudWatch architecture; alert design; SLIs, SLOs, and error budgets; how observability changes incident response for an async system | [SRE Book, Ch. 6: *Monitoring Distributed Systems* (free online)](https://sre.google/sre-book/monitoring-distributed-systems/) · optional: [Google SRE Book — full text (free)](https://sre.google/sre-book/table-of-contents/) | What does Google's SRE team mean by "symptoms not causes" in alerting? How would you apply that to NovaSpark's order pipeline — specifically to the SQS queue depth and the processor Lambda? What is the right SLO for order submission latency? | **No Block 3 lab.** Time used for ADD peer review and instructor Q&A. Come prepared with a draft or outline — peer feedback at this stage is more useful than feedback after submission. **ADD due end of week.** | **Architecture Design Document** (20%) — no late submissions |
+| **8** | Security and IAM: identity vs. access; IAM roles, policies, and least privilege; the confused deputy problem; S3 bucket policies; API Gateway authorization options; what production-ready security actually means for the NovaSpark Order API | [Felten & Schneider, *The Confused Deputy* (1988, 2 pages)](https://dl.acm.org/doi/10.1145/74851.74857) · [AWS IAM Best Practices (AWS Docs)](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html) | What makes the confused deputy problem subtle? Where in your own NovaSpark Order API — specifically in how API Gateway invokes your Lambda — could this class of vulnerability appear? | **Lab 7: Well-Architected Audit** — Written evaluation of your NovaSpark Order API against all six WAF pillars. Use your own code and configuration as the evidence. Identify real gaps (the IAM role, the absence of a DLQ, authentication) and propose one concrete remediation per unsatisfied pillar. No new AWS infrastructure this week — this is an analytical lab. | **Lab 7** — WAF audit + context paragraph |
+| **9** | Cost Optimization and Production Readiness: the six WAF pillars in context; cost as an architectural decision; right-sizing Lambda memory; reserved capacity vs. on-demand DynamoDB; what "production-ready" means before you ship | [AWS, *Cost Optimization Pillar* (Well-Architected Framework)](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/welcome.html) | The WAF is comprehensive but it is also a vendor document. Where does it help you think clearly, and where might it steer you toward AWS-specific solutions when something simpler would work? | **Project extension session.** Class time dedicated to implementing your chosen extension. Goal by end of session: extension route or feature working end-to-end, `pulumi up` clean. Cost analysis using AWS Pricing Calculator at three traffic levels (100 / 10K / 1M req/day) — submitted as part of the final project. See the [Project Roadmap](../../Project-Roadmap/grad/project-roadmap.md) for extension options. | No separate deliverable — extension progress and cost analysis are part of the Final Project |
+| **10** | Emerging Topics: containers and Kubernetes in context; where serverless and container-based architectures fit together; what has changed in cloud infrastructure in the last five years and what is likely to change next | Student-selected: one recent practitioner post or talk on a cloud topic you want to discuss (shared on Canvas by Wednesday of Week 10) | Open format — you bring the reading this week. What is worth understanding about where cloud is heading, and what would you tell Janet about containers given everything NovaSpark has built? | Final project work session and overflow. **Final project due end of week.** | **Final Project** (20%) — no late submissions |
 
 ---
 
@@ -137,8 +139,8 @@ Every lab submission includes a short written component called the **Context Par
 Each lab guide includes the specific prompt. Prompts are designed to be answerable in one paragraph by anyone who did the reading and completed the lab. Examples of the type of question you can expect:
 
 - *"Fowler argues that IaC creates consistency as a forcing function. Point to one specific decision in the template you modified and explain how it either supports or complicates that claim."*
-- *"DeCandia's team chose availability over consistency. Where is that tradeoff visible in the DynamoDB table you designed for NovaSpark?"*
-- *"Vogels describes eventual consistency as a design choice, not a bug. What does that mean for how NovaSpark should handle a fan-out failure in the event architecture you designed?"*
+- *"DeCandia's team chose availability over consistency. Where is that tradeoff visible in the DynamoDB table you designed for the NovaSpark Order API?"*
+- *"Vogels describes eventual consistency as a design choice, not a bug. What does that mean for how NovaSpark should handle a fan-out failure in the order pipeline you built?"*
 
 Context paragraphs are graded on a simple 3-point scale as part of each lab:
 
@@ -155,59 +157,61 @@ The paragraph is worth approximately 20–25% of each lab grade. If you did the 
 
 ## Major Deliverables
 
-### Architecture Design Document (ADD) — Due Week 7 — 25% of grade
+### Architecture Design Document (ADD) — Due Week 7 — 20% of grade
 
-The signature graduate deliverable. You will design a cloud-native service for NovaSpark Technologies — the same fictional company from the labs — but *before* building the final version of it. The document is 10–14 pages and covers:
+The signature graduate deliverable. Before building the final version of the NovaSpark Order API, you will design it — on paper, with full architectural justification. The document is 10–14 pages and covers:
 
-- **Section 1: Requirements** — functional requirements, non-functional requirements (latency, availability, cost), and constraints
-- **Section 2: Architecture Overview** — diagrams and narrative description of all components
-- **Section 3: Component Decisions** — for each major component, explain what you chose and why, including at least one rejected alternative
-- **Section 4: Well-Architected Analysis** — evaluate your design against all six WAF pillars; identify gaps and explain tradeoffs
-- **Section 5: Operational Considerations** — monitoring strategy, deployment approach, failure modes and mitigations
-- **Section 6: Cost Estimate** — rough estimate of monthly AWS costs using the AWS Pricing Calculator
+- **Section 1: Requirements** — functional requirements (the five API routes, the async pipeline), non-functional requirements (latency, availability, cost), and constraints (AWS Academy sandbox, LabRole IAM limitations)
+- **Section 2: Architecture Overview** — diagrams and narrative description of all components: API Gateway, order Lambda, SQS queue, processor Lambda, DynamoDB table
+- **Section 3: Component Decisions** — for each major component, explain what you chose and why, including at least one rejected alternative. Why SQS over a synchronous call? Why DynamoDB over RDS? Why the partition key you chose?
+- **Section 4: Well-Architected Analysis** — evaluate your design against all six WAF pillars; identify gaps and explain tradeoffs honestly
+- **Section 5: Operational Considerations** — monitoring strategy (which CloudWatch metrics matter for an async pipeline), deployment approach, failure modes and mitigations (what happens when the processor Lambda fails?)
+- **Section 6: Cost Estimate** — rough estimate of monthly AWS costs at 100 / 10K / 1M requests per day using the AWS Pricing Calculator
 
 A strong ADD is specific and defensible. It demonstrates that you understand *why* every piece is there, what you considered and rejected, and what the realistic operational concerns are. The final project is the implementation of this document — or an honest accounting of where the implementation diverged from the design and why.
 
-By the time the ADD is due in Week 7, you will have completed labs covering networking (Week 3), serverless compute (Week 4), and storage (Week 5). The network diagram from Lab 3, the cold start and performance analysis from Lab 4, and the access pattern and RTO/RPO analysis from Lab 5 are all inputs to the ADD — students who do the labs well will find the ADD largely assembles itself.
+By the time the ADD is due in Week 7, you will have completed labs covering networking (Week 3), serverless compute (Week 4), storage (Week 5), and the async API pipeline (Week 6). The network diagram from Lab 3, the cold start analysis from Lab 4, the access pattern design from Lab 5, and the async pipeline from Lab 6 are all direct inputs to the ADD — students who do the labs thoughtfully will find the ADD largely assembles itself from work already done.
 
-Full details: see `architecture-design-doc-guide.md` (to be published on Canvas before Week 4). The guide includes annotated examples of strong and weak submissions, section-by-section guidance on what each part of the document should accomplish, and the complete grading rubric.
+Full details: see `architecture-design-doc-guide.md` (published on Canvas before Week 4).
 
-### Final Project — Due Week 10 — 25% of grade
+### Final Project — Due Week 10 — 20% of grade
 
-Build the service you designed in your ADD (or a clearly scoped subset of it). Technical requirements:
+Build the NovaSpark Order API and extend it. The core API is defined — what you control is which extension you implement and how deeply you go.
 
-| Requirement | Details |
-|-------------|---------|
-| Serverless compute | At minimum 2 Lambda functions (or one handling multiple routes) |
-| API endpoint | API Gateway HTTP API with at least 3 routes: `POST`, `GET` (list), `GET` (by ID) |
-| Persistent storage | DynamoDB table — data survives between API calls |
-| Infrastructure as Code | Entire stack deployed with Pulumi — no manually created resources |
-| Clean teardown | `pulumi destroy` runs without errors |
-| IAM least privilege | Lambda role scoped to only what it needs — no `AdministratorAccess` |
+**Core API (required — implemented through Labs 5 and 6):**
+
+| Route | Status Code | Description |
+|-------|-------------|-------------|
+| `POST /orders` | 202 Accepted | Submit an order (async, via SQS) |
+| `GET /orders/{id}` | 200 / 404 | Retrieve a specific order by ID |
+| `GET /orders` | 200 | List all orders |
+
+**Extensions (choose at least one):**
+
+| Extension | What You Build | Analytical Requirement |
+|-----------|---------------|----------------------|
+| `PATCH /orders/{id}` | Update order status | Explain idempotency and conditional write design |
+| `DELETE /orders/{id}` | Soft-cancel orders | Explain why soft delete preserves the audit trail |
+| Status filtering | `GET /orders?status=received` | Explain DynamoDB Scan vs. Query tradeoff at scale |
+| Authentication | Lambda authorizer validates a token | Explain the OAuth flow and confused deputy mitigation |
+| Order notifications | SNS fan-out on order placement | Explain fan-out pattern and at-least-once delivery implications |
+| Observability | CloudWatch dashboard + alarms | Justify metric and threshold choices against an SLO |
+| Custom extension | Propose your own | Instructor approval required by Week 9 |
 
 **Final Project Deliverables — all due end of Week 10:**
 
 *Demo video (5–7 minutes):*
-- `pulumi up` running and completing successfully
-- At least three `curl` calls showing all required routes working end-to-end
-- Walk through your architecture diagram on screen — explain what each component is and why it's there
-- Explain two design decisions from your ADD: did the implementation match your plan, and if not, why not?
+- `pulumi up` running and completing
+- Postman collection run showing all core routes + extension working end-to-end
+- Walk through the architecture on screen — explain each component and why it's there
+- Explain two design decisions: did the implementation match your ADD, and if not, why not?
 - `pulumi destroy` completing cleanly
 
 *Written reflection (1–2 pages):*
 - Where did your implementation match your ADD? Where did it diverge, and why?
 - One WAF pillar you addressed well, with a specific code or configuration example
 - One WAF pillar you did not address, and what you would do to fix it given more time
-
-### Project Options
-
-Choose one NovaSpark internal service to build:
-
-- **Status Event Service** — log and retrieve system health events (the service the whole course narrative has been building toward)
-- **Task Tracker** — create, update, and retrieve engineering tasks
-- **Product Inventory** — manage NovaSpark product catalog items
-- **Feedback Collector** — submit and retrieve internal feedback
-- **Student-proposed idea** — submit a one-paragraph description for instructor approval by end of Week 7
+- Cost analysis at three traffic levels — does the architecture remain cost-effective at scale?
 
 ---
 
@@ -216,16 +220,17 @@ Choose one NovaSpark internal service to build:
 | Assignment | Overall Weight | Notes |
 |------------|----------------|-------|
 | Lab 1: AWS Setup | 5% | Technical + context paragraph |
-| Lab 2: IaC | 10% | Technical + context paragraph |
-| Lab 3: VPC | 10% | Technical + context paragraph |
-| Lab 4: Serverless | 10% | Technical + context paragraph |
-| Lab 5: Databases | 10% | Technical + context paragraph |
-| Workshop 6: APIs & Event-Driven Architecture | 5% | Design diagram + context paragraph |
-| Architecture Design Document | 25% | Canvas PDF — no late submissions |
-| Final Project | 25% | Video + reflection + code — no late submissions |
+| Lab 2: IaC | 8% | Technical + context paragraph |
+| Lab 3: VPC | 8% | Technical + context paragraph |
+| Lab 4: Serverless | 8% | Technical + context paragraph |
+| Lab 5: Storage | 8% | Technical + context paragraph |
+| Lab 6: Async Order API | 8% | Technical + written justification + context paragraph |
+| Lab 7: Well-Architected Audit | 5% | Written audit + context paragraph |
+| Architecture Design Document | 20% | Canvas PDF — no late submissions |
+| Final Project | 20% | Video + reflection + code — no late submissions |
 | **Total** | **100%** | |
 
-Labs and the workshop together account for 50% of the course grade. The ADD and Final Project together account for the other 50%. This split reflects the course philosophy: you are expected to both do the technical work and explain it.
+Labs together account for 50% of the course grade. The ADD and Final Project together account for the other 50%. This split reflects the course philosophy: you are expected to both do the technical work and explain it — at depth.
 
 ### Within Each Lab: Technical vs. Paragraph
 
@@ -250,7 +255,7 @@ Graduate students are expected to perform at the B level or above. Sustained C-r
 
 ### Late Work Policy
 
-Each student receives **5 late days** at the start of the term. Late days apply to lab deliverables only (Labs 1–6 and Workshop 6). The Architecture Design Document and Final Project do not accept late submissions — the ADD is a gate for project feedback, and the final project deadline is fixed to align with end-of-term grading.
+Each student receives **5 late days** at the start of the term. Late days apply to lab deliverables only (Labs 1–7). The Architecture Design Document and Final Project do not accept late submissions — the ADD is a gate for project feedback, and the final project deadline is fixed to align with end-of-term grading.
 
 ---
 
@@ -263,11 +268,12 @@ Each student receives **5 late days** at the start of the term. Late days apply 
 | EC2 + NAT Gateway (Labs 2–3) | ~$5–10 |
 | Lambda + API Gateway | ~$0 (free tier) |
 | DynamoDB | ~$0 (free tier) |
+| SQS | ~$0 (free tier) |
 | S3 | ~$1 |
 | CloudWatch metrics/alarms | ~$1–2 |
 | **Total expected** | **~$7–13** |
 
-Rules of thumb: always run `pulumi destroy` when done with any lab that uses EC2 or NAT Gateway. Lambda, API Gateway, and DynamoDB are free tier — no destroy urgency, but practice the habit. Monitor your balance in the AWS Academy Learner Lab panel. If you see an unexpected spike, email the instructor immediately.
+Always run `pulumi destroy` when done with any lab. Lambda, API Gateway, DynamoDB, and SQS are free tier — no cost urgency, but practice the habit every week. Monitor your balance in the AWS Academy Learner Lab panel. If you see an unexpected spike, email the instructor immediately.
 
 ---
 
@@ -279,7 +285,7 @@ All labs and the final project are set in the context of **NovaSpark Technologie
 - **Ben** — Engineering Manager. Focused on shipping velocity, cost, and operational reliability. He's the one explaining the AWS bill.
 - **Linda** — SRE lead. Worried about reliability, security, and what happens at 3am. Pushes back on anything that isn't production-grade.
 
-Read more about  [NovaSpark Technologies Here](../novaspark/readme.md)
+Read more about [NovaSpark Technologies Here](../novaspark/readme.md)
 
 ---
 
@@ -296,8 +302,9 @@ At the start of the term you will receive a GitHub Classroom invitation that cre
 /2-IaC/
 /3-VPC/
 /4-Serverless/
-/5-Databases/
-/6-APIs-EDA/
+/5-Storage/
+/6-API/
+/7-WAF/
 /project/
 ```
 
@@ -368,7 +375,7 @@ Write a detailed post (minimum 1,500 words) about your final project — archite
 - Implement S3 backend for Pulumi state management with documentation
 - Add a CI/CD pipeline using GitHub Actions for automated deployment
 - Add authentication to your project API (AWS Cognito or Lambda authorizer)
-- Add a CloudWatch dashboard and at least two alarms to your project with written justification for the metrics chosen
+- Add a CloudWatch dashboard and at least two alarms with written justification for the metrics chosen
 
 ---
 
@@ -376,13 +383,11 @@ Write a detailed post (minimum 1,500 words) about your final project — archite
 
 CS 545 is a course about architectural thinking. The technical skills matter — you will configure real AWS infrastructure, read real systems papers, and build a working service — but the primary question this course asks is not *can you build it?* It is *do you understand why it's built that way, what the alternatives were, and what the broader implications are for how modern software systems work?*
 
-In practice, that means:
-
 **Labs are about reasoning, not output.** Starter templates and scaffolded infrastructure are provided so you spend your time understanding and evaluating decisions, not fighting syntax. A working deployment with no justification of the tradeoffs is an incomplete submission. The written component of every lab is where the graduate-level work happens.
 
-**Readings situate technology in a bigger picture.** Every week's primary reading connects the technical topic to how practitioners and researchers have actually grappled with these problems at scale. Cloud computing has fundamentally changed what is possible in software — the readings help you develop a vocabulary and perspective for that shift that you won't get from documentation alone.
+**Readings situate technology in a bigger picture.** Every week's primary reading connects the technical topic to how practitioners and researchers have actually grappled with these problems at scale. The readings help you develop a vocabulary and perspective for that shift that you won't get from documentation alone.
 
-**The ADD is the course's center of gravity.** Professional cloud engineers and architects rarely build first and think later. The Architecture Design Document asks you to design the full NovaSpark system on paper before building it — requirements, component choices, rejected alternatives, operational concerns, and cost model. By the time it's due in Week 7, you will have done the analysis across networking, storage, and compute in the earlier labs. The ADD assembles that thinking into a coherent whole.
+**The ADD is the course's center of gravity.** Professional cloud engineers and architects rarely build first and think later. The Architecture Design Document asks you to design the full NovaSpark Order API on paper before building the final implementation — requirements, component choices, rejected alternatives, operational concerns, and cost model. By the time it's due in Week 7, you will have built the networking (Lab 3), serverless compute (Lab 4), storage (Lab 5), and async API pipeline (Lab 6) layers. The ADD assembles that thinking into a coherent architectural argument.
 
 **The written work is probably the hardest part.** Students with strong technical backgrounds sometimes find that explaining *why* is harder than doing. Students newer to the technical side find the scaffolded approach accessible, and the analytical emphasis rewards clear thinking over prior experience. Both groups tend to find the written deliverables — the context paragraphs, the ADD, the final reflection — where they grow the most.
 
