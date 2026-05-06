@@ -37,10 +37,9 @@ cp path/to/4-Serverless/ugrad/__main__.py .
 cp -r path/to/4-Serverless/ugrad/app ./app
 ```
 
-Initialize a new Pulumi project in this directory (separate stack from Lab 4):
+The Pulumi project is already initialized in this directory (`Pulumi.yaml` is pre-populated). Set the passphrase and you're ready to go:
 
 ```bash
-pulumi new python -y --name novaspark-api --stack dev
 export PULUMI_CONFIG_PASSPHRASE=""
 ```
 
