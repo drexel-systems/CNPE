@@ -65,6 +65,14 @@ lambda_role = aws.iam.get_role(name="LabRole")
 #   per-request cost but zero operational overhead — correct for a new
 #   service with unknown traffic patterns.
 #
+# About PITR (Point-in-Time Recovery):
+#   DynamoDB offers PITR as an optional feature — continuous backup with
+#   second-granularity restore over the last 35 days. D6 asks you to
+#   recommend whether NovaSpark should enable it (it is intentionally
+#   NOT enabled in this lab — keep that gap as a finding for your ADD).
+#   The Pulumi attribute is point_in_time_recovery=... if you want to
+#   look it up while answering D6.
+#
 # Tags to include: Project="NovaSpark", Lab="5", Course="CS545"
 #
 # Example structure:

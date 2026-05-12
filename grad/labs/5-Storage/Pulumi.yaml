@@ -1,4 +1,4 @@
-name: novaspark-orders
+name: novaspark-orders-dynamodb
 description: Lab 5 - Storage (DynamoDB)
 runtime:
   name: python

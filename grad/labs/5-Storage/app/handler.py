@@ -168,21 +168,46 @@ def handle_status(event, context):
 #      omits "Item" from the response. response.get("Item") returns None
 #      rather than raising KeyError, which is the correct way to check.
 #
-#   4. Return the item on success:
-#        return {
-#            "statusCode": 200,
-#            "headers": {"Content-Type": "application/json"},
-#            "body": json.dumps(item),
-#        }
+#   4. Return the item on success — but watch out for the Decimal
+#      gotcha described below.
 #
 # 404 response body should be:
 #   {"error": f"Order {order_id} not found"}
 #
-# Note on Decimal: DynamoDB returns numeric types as decimal.Decimal
-# objects, which are not JSON-serializable by default. For this lab,
-# your seeded test item will have integer values — json.dumps will
-# handle them. A production implementation would use a custom JSON
-# encoder or convert Decimal to float/int explicitly.
+# ---------------------------------------------------------------
+# THE DECIMAL GOTCHA — read carefully
+# ---------------------------------------------------------------
+# DynamoDB returns numeric attributes as decimal.Decimal objects,
+# which are NOT JSON-serializable by default — not even when the
+# value is an integer. A naive json.dumps(item) will fail with:
+#
+#   TypeError: Object of type Decimal is not JSON serializable
+#
+# Your seeded test item has quantity=3, which boto3 returns as
+# Decimal("3"). The 200 response path will crash with a 502 at
+# the gateway unless you handle this. The cleanest production
+# pattern is a custom JSON encoder. Add this near your imports:
+#
+#   from decimal import Decimal
+#
+#   class DecimalEncoder(json.JSONEncoder):
+#       def default(self, obj):
+#           if isinstance(obj, Decimal):
+#               return int(obj) if obj % 1 == 0 else float(obj)
+#           return super().default(obj)
+#
+# Then serialize the item with the encoder:
+#
+#   return {
+#       "statusCode": 200,
+#       "headers": {"Content-Type": "application/json"},
+#       "body": json.dumps(item, cls=DecimalEncoder),
+#   }
+#
+# Why this matters for your ADD: every boto3 + Lambda + JSON
+# stack hits this. The abstraction leaks. Section 5 of your ADD
+# (Operational Considerations) is where you would note quirks
+# like this if they affect operations at scale.
 #
 # def handle_get_order_by_id(event):
 #     ...
