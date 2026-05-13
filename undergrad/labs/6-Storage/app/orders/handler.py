@@ -19,8 +19,16 @@ import logging
 import os
 import uuid
 import datetime
+import decimal
 import boto3
 from boto3.dynamodb.conditions import Attr
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal):
+            return int(obj) if obj % 1 == 0 else float(obj)
+        return super().default(obj)
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

@@ -157,7 +157,6 @@ processor_archive = pulumi.FileArchive("app/processor")
 
 orders_table = None  # TODO 1 — replace with aws.dynamodb.Table(...)
 
-
 # TODO 2: Create the orders Lambda
 #
 # Same as Lab 5, but add TABLE_NAME to the environment variables.

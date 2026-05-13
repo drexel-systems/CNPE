@@ -135,6 +135,31 @@ Implement `handle_list_orders()`. Check for an optional `?status=` query paramet
 
 Return the items list under a `"orders"` key along with a `"count"`.
 
+> **Common gotcha — `{"error": "Internal server error"}` on GET routes**
+>
+> boto3's DynamoDB resource returns numeric attributes (like `quantity`) as Python `Decimal` objects, not plain `int`. The standard `json.dumps` cannot serialize `Decimal` and raises a `TypeError`, which your `except` block catches and converts to a 500.
+>
+> Fix this by adding a custom encoder to your handler:
+>
+> ```python
+> import decimal
+>
+> class DecimalEncoder(json.JSONEncoder):
+>     def default(self, obj):
+>         if isinstance(obj, decimal.Decimal):
+>             return int(obj) if obj % 1 == 0 else float(obj)
+>         return super().default(obj)
+> ```
+>
+> Then pass `cls=DecimalEncoder` to every `json.dumps` call that serializes DynamoDB items:
+>
+> ```python
+> json.dumps(order, cls=DecimalEncoder)
+> json.dumps({"orders": orders, "count": len(orders)}, cls=DecimalEncoder)
+> ```
+>
+> The encoder is already included in the provided `orders/handler.py` template. If you see 500s on GET routes, check that you are using `cls=DecimalEncoder` in your `json.dumps` calls.
+
 **Redeploy:**
 
 ```bash

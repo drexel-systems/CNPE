@@ -10,24 +10,26 @@ You do not need your Lab 5 stack to still be running — if you ran `pulumi dest
 
 ## Lab 6 Project Setup
 
-Create your Lab 6 working directory:
+Navigate into the provided Lab 6 directory:
 
 ```bash
-mkdir -p path/to/6-Storage/ugrad && cd path/to/6-Storage/ugrad
+cd path/to/6-Storage
 ```
 
-Copy the provided Lab 6 template files into this directory. Your structure should look like:
+Your directory structure should look like:
 
 ```
-6-Storage/ugrad/
+6-Storage/
 ├── __main__.py         ← Lab 5 code + Lab 6 TODOs
-├── app/
-│   ├── handler.py      ← Lab 4 status handler (unchanged)
-│   ├── orders/
-│   │   └── handler.py  ← Lab 6: GET /orders/{id} and GET /orders TODOs
-│   └── processor/
-│       └── handler.py  ← Lab 6: DynamoDB put_item TODO
-└── SETUP.md
+├── Pulumi.yaml
+├── requirements.txt
+├── SETUP.md
+└── app/
+    ├── handler.py      ← Lab 4 status handler (unchanged)
+    ├── orders/
+    │   └── handler.py  ← Lab 6: GET /orders/{id} and GET /orders TODOs
+    └── processor/
+        └── handler.py  ← Lab 6: DynamoDB put_item TODO
 ```
 
 Initialize a new Pulumi project (separate stack from Lab 5):
@@ -35,7 +37,7 @@ Initialize a new Pulumi project (separate stack from Lab 5):
 ```bash
 export PULUMI_CONFIG_PASSPHRASE=""
 pulumi login --local
-pullumi install
+pulumi install
 pulumi stack init dev
 ```
 
