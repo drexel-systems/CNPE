@@ -81,7 +81,7 @@ Add `pulumi.export("table_name", orders_table.name)` after the existing exports.
 pulumi up
 ```
 
-Look for approximately 22 resources and three outputs: `status_url`, `orders_url`, and `table_name`. The DynamoDB table should appear in the resource list.
+Look for approximately 19 resources and three outputs: `status_url`, `orders_url`, and `table_name`. The DynamoDB table should appear in the resource list.
 
 ---
 
