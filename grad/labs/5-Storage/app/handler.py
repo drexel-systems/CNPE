@@ -55,6 +55,27 @@ logger.setLevel(logging.INFO)
 env_create_time = datetime.datetime.now()
 print(f"--- GLOBAL INIT: Environment created at {env_create_time} ---")
 
+
+# ---------------------------------------------------------------
+# Custom JSON encoder for DynamoDB Decimal values
+#
+# DynamoDB returns numeric attributes as Python Decimal objects,
+# which json.dumps() cannot serialize by default — even when the
+# value is integer-valued. Convert Decimal to int when there is
+# no fractional part, otherwise to float.  The need for this and 
+# how to use it are described in the lab-guide, please refer to
+# that.
+# ---------------------------------------------------------------
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return int(obj) if obj % 1 == 0 else float(obj)
+        return super().default(obj)
+
+
+
+
+
 # TODO B: Initialize DynamoDB client and table reference at module level
 #
 # Two lines to add here, after env_create_time:

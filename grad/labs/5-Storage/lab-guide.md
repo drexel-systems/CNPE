@@ -63,6 +63,31 @@ For each TODO in both files, be able to answer:
 4. What `response.get("Item")` returns when the item does not exist — and why that is handled with a 404 rather than a Python exception
 5. What `event["pathParameters"]["id"]` contains and where API Gateway populates it from
 
+> **Common gotcha — `{"error": "Internal server error"}` on GET routes**
+>
+> boto3's DynamoDB resource returns numeric attributes (like `quantity`) as Python `Decimal` objects, not plain `int`. The standard `json.dumps` cannot serialize `Decimal` and raises a `TypeError`, which your `except` block catches and converts to a 500.
+>
+> Fix this by adding a custom encoder to your handler:
+>
+> ```python
+> import decimal
+>
+> class DecimalEncoder(json.JSONEncoder):
+>     def default(self, obj):
+>         if isinstance(obj, decimal.Decimal):
+>             return int(obj) if obj % 1 == 0 else float(obj)
+>         return super().default(obj)
+> ```
+>
+> Then pass `cls=DecimalEncoder` to every `json.dumps` call that serializes DynamoDB items:
+>
+> ```python
+> json.dumps(order, cls=DecimalEncoder)
+> json.dumps({"orders": orders, "count": len(orders)}, cls=DecimalEncoder)
+> ```
+>
+> The encoder is already included in the provided `orders/handler.py` template. If you see 500s on GET routes, check that you are using `cls=DecimalEncoder` in your `json.dumps` calls.
+
 ---
 
 ## Part 1: Data Model Design (D1)
