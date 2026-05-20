@@ -106,6 +106,16 @@ This is the shape every pillar entry takes. Now write the remaining five yoursel
 
 ---
 
+### A Note on Research
+
+The "where to look" prompts below tell you what to examine in your own architecture. They do not tell you what to do about it — that is your job, and it requires research.
+
+This course is designed to give you the foundation to navigate the decision landscape, not to teach you every AWS service or every architectural pattern. The gap-finding part of the audit you can do by reading your own code. The improvement step — writing a defensible Option A and Option B, naming why one is better for NovaSpark at this stage — requires you to understand the options well enough to reason about them. That means reading AWS documentation, looking at service comparison pages, and reading real engineering write-ups about how teams have solved these problems.
+
+Before writing your Step 5 improvement for any pillar, spend a few minutes researching the options you are proposing. The bar is not "did you know this before class" — it is "can you explain the tradeoff in your own words and defend the classification." An improvement that names a service you looked up and understood is worth full credit. One that names a service you have not actually read about is easy to spot and earns none.
+
+---
+
 ### Pillar 1 — Operational Excellence (~12 min)
 
 **WAF question:** *How do you operate, observe, and evolve this workload over time?*
