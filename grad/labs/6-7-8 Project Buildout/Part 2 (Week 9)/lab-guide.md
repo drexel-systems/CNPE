@@ -67,17 +67,15 @@ Before starting the six-pillar audit in Block 3, do two things:
 
 ### The Worked Example (10 min, instructor-led)
 
-The Security pillar — using the bastion host from Lab 3 as the decision:
+Open **`student-example.md`** in this directory. The instructor will walk through the Security pillar entry using the Lab 3 bastion host as the decision — Parts 1, 2, and 3 cover the technical context, the SSH vs. Session Manager architecture, and the complete five-step audit entry including an Architecture Decision Record.
 
-| Step | Content |
-|------|---------|
-| **Decision** | Lab 3 deployed an EC2 bastion with a security group allowing inbound SSH from `0.0.0.0/0` |
-| **WAF Question** | *How do you protect your workloads from external threats?* Is exposure minimized? Are controls audited? |
-| **Current State** | SG limits inbound to port 22, but any public IP can attempt to connect. No MFA on SSH. No audit log of connections. |
-| **Gap Classification** | **Conscious Tradeoff** — known, documented in the lab guide, tied to the practical constraint of student networks with varying IP ranges |
-| **Improvement** | Restrict SG to a known CIDR (e.g., university VPN range), or replace the bastion with AWS Systems Manager Session Manager — no port 22, no inbound rule, full audit log |
+Read the worked entry carefully before starting your own audit. Three things to notice:
 
-This is the shape every pillar entry takes.
+**The current state assessment names strengths before gaps.** The bastion entry doesn't open with problems — it opens with what the current state does well (SSH keys require physical possession; the bastion pattern is itself a best practice). Your entries should do the same. If you can only see gaps, your classification won't hold up and your ADR reasoning will be shallow.
+
+**The ADR format changes shape depending on the finding.** The bastion entry is a Conscious Tradeoff — the risk was known, documented, and a production fix is identified. Your six pillars will likely include findings across all three classifications. A Best Practice Met entry has no ADR (you document the strength and move on). An Unknown Gap entry has a shorter Option 1 ("do nothing" carries more weight when you hadn't considered the risk at all). A Conscious Tradeoff — like the bastion — has a full ADR with real options and a reasoned decision. Match the depth of Step 5 to the classification.
+
+**The "do nothing" option is always honest, not pessimistic.** Every finding where Option 1 is "accept current state" should explain what that option acknowledges and what risk it carries. This is what separates an architecture that has been thought about from one that just happened.
 
 ### Start Your Audit (30 min)
 
