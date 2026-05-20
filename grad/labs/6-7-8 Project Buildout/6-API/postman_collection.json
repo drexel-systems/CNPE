@@ -1,0 +1,346 @@
+{
+  "info": {
+    "name": "NovaSpark Order API — CS 545 Week 8",
+    "description": "Test collection for the NovaSpark async order pipeline.\n\nSetup:\n1. Run `pulumi stack output orders_url` to get your API Gateway base URL.\n2. Set the `api_url` environment variable in Postman to that value.\n3. Run requests in the order shown — each test builds on the previous one.\n\nExpected flow:\n  POST /orders (with customer_id) → 202 Accepted\n  POST /orders (missing customer_id) → 400 Bad Request\n  GET /orders/{id} immediately → 404 (consistency window)\n  GET /orders/{id} after 5-10s → 200 (order persisted)\n  GET /orders → 200 (list all)\n  GET /orders?customer_id=X → 200 (filtered)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "api_url",
+      "value": "",
+      "description": "Set this to your pulumi stack output: orders_url"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "description": "Populated automatically from the POST /orders response"
+    }
+  ],
+  "item": [
+    {
+      "name": "Test 1a — POST /orders (happy path)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 202 Accepted', function () {",
+              "    pm.response.to.have.status(202);",
+              "});",
+              "pm.test('Response has order_id', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json).to.have.property('order_id');",
+              "    pm.collectionVariables.set('order_id', json.order_id);",
+              "    console.log('Saved order_id:', json.order_id);",
+              "});",
+              "pm.test('Response has customer_id', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json).to.have.property('customer_id');",
+              "    pm.expect(json.customer_id).to.eql('cust-001');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{api_url}}/orders",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"item\": \"widget\",\n  \"quantity\": 3,\n  \"customer_id\": \"cust-001\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Test 1b — POST /orders (missing customer_id → 400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test('Error message mentions customer_id', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.error).to.include('customer_id');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{api_url}}/orders",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"item\": \"widget\",\n  \"quantity\": 3\n}"
+        }
+      }
+    },
+    {
+      "name": "Test 2a — GET /orders/{id} immediately (consistency window → expect 404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 404 (order not yet in DynamoDB)', function () {",
+              "    pm.response.to.have.status(404);",
+              "    console.log('ORDER NOT YET VISIBLE — consistency window open. Wait 5-10 seconds and run Test 2b.');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{api_url}}/orders/{{order_id}}"
+      }
+    },
+    {
+      "name": "Test 2b — GET /orders/{id} after delay (expect 200 + customer_id)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Wait 8 seconds before sending to allow the processor Lambda to run.",
+              "// If you still get 404, wait a few more seconds and try again.",
+              "setTimeout(function(){}, 8000);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Order record has customer_id', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json).to.have.property('customer_id');",
+              "    pm.expect(json.customer_id).to.eql('cust-001');",
+              "});",
+              "pm.test('Order record has expected fields', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json).to.have.property('order_id');",
+              "    pm.expect(json).to.have.property('item');",
+              "    pm.expect(json).to.have.property('quantity');",
+              "    pm.expect(json).to.have.property('status');",
+              "    pm.expect(json).to.have.property('created_at');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{api_url}}/orders/{{order_id}}"
+      }
+    },
+    {
+      "name": "Test 3 — GET /orders (list all)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Response has orders array', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json).to.have.property('orders');",
+              "    pm.expect(json.orders).to.be.an('array');",
+              "    console.log('Total orders in table:', json.count);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": "{{api_url}}/orders"
+      }
+    },
+    {
+      "name": "Test 4a — POST second order for cust-001",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 202 Accepted', function () {",
+              "    pm.response.to.have.status(202);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{api_url}}/orders",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"item\": \"gadget\",\n  \"quantity\": 1,\n  \"customer_id\": \"cust-001\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Test 4b — POST order for cust-002",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 202 Accepted', function () {",
+              "    pm.response.to.have.status(202);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{api_url}}/orders",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"item\": \"thingamajig\",\n  \"quantity\": 2,\n  \"customer_id\": \"cust-002\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Test 4c — GET /orders?customer_id=cust-001 (filter — wait 10s after 4a/4b)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('All returned orders belong to cust-001', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.orders).to.be.an('array');",
+              "    json.orders.forEach(function(order) {",
+              "        pm.expect(order.customer_id).to.eql('cust-001');",
+              "    });",
+              "    console.log('cust-001 order count:', json.count);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{api_url}}/orders?customer_id=cust-001",
+          "query": [
+            { "key": "customer_id", "value": "cust-001" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Test 4d — GET /orders?customer_id=cust-002 (filter)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('All returned orders belong to cust-002', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.orders).to.be.an('array');",
+              "    json.orders.forEach(function(order) {",
+              "        pm.expect(order.customer_id).to.eql('cust-002');",
+              "    });",
+              "    console.log('cust-002 order count:', json.count);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{api_url}}/orders?customer_id=cust-002",
+          "query": [
+            { "key": "customer_id", "value": "cust-002" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Test 4e — GET /orders?customer_id=unknown (empty list → 200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200 OK (not 404)', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Orders array is empty', function () {",
+              "    var json = pm.response.json();",
+              "    pm.expect(json.orders).to.be.an('array').that.is.empty;",
+              "    pm.expect(json.count).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{api_url}}/orders?customer_id=unknown-customer",
+          "query": [
+            { "key": "customer_id", "value": "unknown-customer" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Test 5 — PATCH /orders/{id} → 501 Not Implemented",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 501 Not Implemented', function () {",
+              "    pm.response.to.have.status(501);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "url": "{{api_url}}/orders/{{order_id}}",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"processing\"\n}"
+        }
+      }
+    }
+  ]
+}

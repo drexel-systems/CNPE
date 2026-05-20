@@ -1,0 +1,3 @@
+name: novaspark-order-api
+runtime: python
+description: NovaSpark Order API — async order pipeline (CS 545 Week 8 starter)
