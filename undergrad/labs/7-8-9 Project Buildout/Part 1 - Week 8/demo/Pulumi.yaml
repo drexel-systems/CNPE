@@ -1,0 +1,3 @@
+name: novaspark-vpc-demo
+runtime: go
+description: NovaSpark VPC demo — SSM access model, Go runtime
