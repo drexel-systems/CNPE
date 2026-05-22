@@ -5,6 +5,40 @@ Before you open the lab guide, read this. It takes ten minutes and will save you
 
 ---
 
+## The NovaSpark Context — How We Got Here
+
+NovaSpark is a mid-size retail platform that has been processing customer orders for several years. Until recently, their order processing system was built around a traditional synchronous model: a customer submits an order, the web server calls the order processor directly, waits for it to complete, and returns a confirmation. That model worked when order volume was low and the system lived on a handful of long-running servers. It has not scaled gracefully.
+
+**The problems that surfaced as the business grew:**
+
+The order processor does real work — it validates inventory, applies pricing rules, and persists the record. Under load, customers submitting orders were waiting on all of that before getting a response. During peak periods, slow processor performance cascaded directly into slow response times for customers. Worse, a processor failure meant a 500 back to the customer, even when the failure had nothing to do with whether the order was valid. The ordering surface and the processing logic were tightly coupled in ways that made both harder to change independently.
+
+Beyond performance, the infrastructure itself became a liability. Servers needed to be kept running, patched, and sized for peak load — which meant paying for capacity that sat idle most of the time. Deploying a change to the order processor meant coordinating a deployment window. Adding a new route meant touching the same server configuration that ran everything else.
+
+**What the primary stakeholders have been asking for:**
+
+- **Janet (VP Engineering):** Wants to show investors a system that can handle growth without expensive infrastructure decisions every quarter. The ask is a modern, cloud-native order pipeline that demonstrates the organization can operate with the same rigor as the companies they compete with.
+
+- **Ben (Engineering Lead):** Has been managing the operational pain of the current system. His concern is reliability and deployment independence — he wants order submission to be separated from order processing so that a slow processor doesn't block customers, and so his team can deploy and scale each piece independently.
+
+- **Linda (Principal Architect):** Has seen too many systems get rebuilt without a clear record of why decisions were made, leaving the next team to guess. Her requirement is documentation. Not a description of what was built — a record of what was decided, what was considered and rejected, and why. That record is what makes a system maintainable and defensible in an engineering review.
+
+**What is being proposed:**
+
+A rebuild of the order processing components using a cloud-native, event-driven architecture. The core of the proposal is to decouple order submission from order processing using an asynchronous queue: when a customer submits an order, the system immediately acknowledges receipt and hands the order off to a queue for processing. The customer gets a fast, reliable response. The processor works at its own pace, independently scalable, without affecting the submission surface.
+
+The full stack — API Gateway, Lambda, SQS, DynamoDB — replaces the synchronous monolith with components that scale independently, deploy independently, and fail independently. Infrastructure is defined as code so it can be recreated consistently across environments and torn down cleanly when not needed.
+
+**Your role:**
+
+You are a primary architect on this project. You are not just implementing the system — you are responsible for defining the architecture, documenting the decisions, and producing the written record that Linda requires and that the organization can stand behind. The Architecture Design Document you are building across these three weeks is that record. It is not a lab report. It is the artifact that explains, to anyone who reads it in the future, why NovaSpark's order pipeline is the way it is and what was consciously considered and rejected along the way.
+
+The system you are deploying in today's lab is the first complete implementation of this proposal. What you write in the ADD is the engineering foundation that justifies it.
+
+---
+
+---
+
 ## What the ADD Is — and What It Isn't
 
 The Architecture Design Document is a **record of decisions and reasoning** — not a description of what you built. This distinction matters more than any formatting requirement.
