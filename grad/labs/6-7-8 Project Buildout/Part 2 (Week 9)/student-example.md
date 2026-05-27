@@ -1,5 +1,5 @@
 # WAF Audit — Worked Example
-## CS 463 Week 8: SSH Bastion Access and the Audit Format
+## CS 545 Week 9: SSH Bastion Access and the Audit Format
 
 Use this document as a reference when writing your own six-pillar audit. Part 1 and Part 2 cover the technical background from the in-class discussion. Part 3 shows exactly how that material maps to the five-step audit format — including how to write Step 5 as an Architecture Decision Record.
 

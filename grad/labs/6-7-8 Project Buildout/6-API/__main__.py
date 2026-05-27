@@ -4,15 +4,15 @@ Course: CS 545 — Cloud Native Platform Engineering
 
 This near-complete stack wires together the NovaSpark async order pipeline.
 Everything below is defined and should not require modification — except the
-three TODO blocks, which are the architecturally significant connection points
-you are responsible for configuring:
+three marked blocks below. Two are Pulumi configuration tasks you will deploy;
+one is a written ADD deliverable you will document:
 
-  # TODO 1  Wire SQS trigger to processor Lambda  (EventSourceMapping)
-  # TODO 2  Set environment variables on both Lambdas
-  # TODO 3  Add DynamoDB PutItem permission to processor role
+  # TODO 1  Wire SQS trigger to processor Lambda  (EventSourceMapping) — code
+  # TODO 2  Set environment variables on both Lambdas                  — code
+  # TODO 3  LabRole model — understand the IAM constraint              — written
 
-Each TODO has a comment block explaining what it does, why it matters, and a
-link to the relevant Pulumi and AWS documentation. Work through them in order.
+Each block has a comment explaining what it does, why it matters, and what to
+produce. Work through them in order.
 
 Prerequisite: Lab 5 stack deployed. Your DynamoDB table (novaspark-orders)
 and Lambda execution role must already exist in your AWS account.
@@ -34,9 +34,11 @@ orders_table = aws.dynamodb.Table.get(
 )
 
 # ── Lambda execution role ─────────────────────────────────────────────────────
-# Both Lambdas use the AWS Academy LabRole, which carries the DynamoDB read
-# permissions (GetItem, Scan) established in Lab 5.
-# The processor Lambda's write permission is added in TODO 3 below.
+# Both Lambdas use the AWS Academy LabRole — a single shared role with broad
+# permissions. The Academy sandbox does not permit creating or modifying IAM
+# roles via Pulumi. TODO 3 below is a written ADD deliverable, not a code change:
+# you document what a production-scoped role would carry and classify the
+# shared LabRole as a Conscious Tradeoff in your Security pillar audit.
 lab_role = aws.iam.get_role(name="LabRole")
 
 # ── SQS Queue ─────────────────────────────────────────────────────────────────
@@ -174,41 +176,81 @@ processor_function = aws.lambda_.Function(
 # )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# TODO 3: Add DynamoDB PutItem permission to processor role
+# TODO 3 (written deliverable — no Pulumi resource)
+# NOTE: DynamoDB permissions and the LabRole model
 # ─────────────────────────────────────────────────────────────────────────────
-# The processor Lambda must be able to write orders to DynamoDB.
-# The orders Lambda already has GetItem and Scan (from Lab 5). Add only
-# what is missing for the processor: dynamodb:PutItem on the orders table.
+# In a production deployment, the processor Lambda would have its own dedicated
+# IAM execution role carrying the minimum permissions it needs — and nothing
+# more. For this pipeline, that means exactly one DynamoDB action:
 #
-# Why not dynamodb:* ?
-# Least privilege. The processor only writes — granting dynamodb:* would give
-# it permissions it never uses. The orders Lambda only reads — granting it
-# PutItem would be equally unnecessary. A role with more permissions than
-# needed is exactly the kind of finding that surfaces in a Security pillar
-# audit. Document this decision in ADD Section 3 (Processor Lambda entry)
-# and ADD Section 4 (Security pillar).
+#   Processor role (production):
+#   {
+#     "Version": "2012-10-17",
+#     "Statement": [{
+#       "Effect":   "Allow",
+#       "Action":   ["dynamodb:PutItem"],
+#       "Resource": "<orders table ARN>"
+#     }]
+#   }
 #
-# In this AWS Academy environment, LabRole already satisfies the permission
-# requirement. Define the policy anyway: it documents the minimum required
-# permission scope and is the artifact your ADD Sections 3 and 4 will cite.
-# In a production account with a dedicated execution role, this policy would
-# be the only DynamoDB permission the processor role carries.
+#   Orders role (production):
+#   {
+#     "Version": "2012-10-17",
+#     "Statement": [{
+#       "Effect":   "Allow",
+#       "Action":   ["dynamodb:GetItem", "dynamodb:Scan"],
+#       "Resource": "<orders table ARN>"
+#     }]
+#   }
 #
-# Pulumi docs:
-#   https://www.pulumi.com/registry/packages/aws/api-docs/iam/rolepolicy/
+# This is least privilege: each component carries only the permissions it
+# actually uses. A processor role with dynamodb:* would allow it to delete or
+# overwrite any record — permissions it never needs and should never have.
+# An orders role with dynamodb:PutItem would grant write access to a Lambda
+# whose entire job is to read. Over-permissioned roles are one of the most
+# common Security pillar findings in a real WAF audit.
 #
-# processor_dynamodb_policy = aws.iam.RolePolicy(
-#     "processor-dynamodb-policy",
-#     role=lab_role.name,
-#     policy=orders_table.arn.apply(lambda arn: json.dumps({
-#         "Version": "2012-10-17",
-#         "Statement": [{
-#             "Effect":   "Allow",
-#             "Action":   ["dynamodb:PutItem"],
-#             "Resource": arn,
-#         }],
-#     })),
-# )
+# ── Why there is no Pulumi resource here ─────────────────────────────────────
+# AWS Academy provides a single pre-provisioned IAM role — LabRole — shared
+# by all Lambda functions in your sandbox account. This is a deliberate design:
+# one role with broad service permissions, with IAM write operations locked
+# down so students cannot escalate privileges or make persistent changes to
+# the account's permission model.
+#
+# The practical consequence: iam:PutRolePolicy and iam:AttachRolePolicy on
+# LabRole are restricted in Academy. If you were to add an aws.iam.RolePolicy
+# resource targeting LabRole, pulumi up would fail with an AccessDeniedException
+# on the IAM API call — the rest of the stack would deploy fine, but that one
+# resource would error. This is not a bug in your code; it is the sandbox
+# working as designed.
+#
+# LabRole already has DynamoDB access (Academy grants it broad service
+# permissions), so the pipeline works. But "it works" is different from "the
+# permissions are correctly scoped." The gap between those two things is exactly
+# what ADD Section 4 is for.
+#
+# ── ADD deliverable (replaces the Pulumi TODO) ───────────────────────────────
+# This is a written deliverable for your ADD, not a Pulumi configuration task:
+#
+#   ADD Section 1c (Constraints):
+#     Name the LabRole model explicitly. Both Lambdas share one execution role
+#     with permissions broader than least privilege requires. This is a sandbox
+#     constraint, not a deliberate architectural choice — state it as such.
+#
+#   ADD Section 3 (Component Decisions → Processor Lambda):
+#     Write out the minimal policy JSON the processor Lambda would carry in a
+#     production account (the PutItem-only statement above). State what a
+#     production deployment would do differently: a dedicated execution role per
+#     Lambda, each scoped to only the actions that Lambda performs.
+#
+#   ADD Section 4 (Security pillar):
+#     Classify the shared LabRole as a Conscious Tradeoff. You know about it,
+#     the reason is documented (Academy sandbox restriction), and you can state
+#     the production fix. That is the definition of a Conscious Tradeoff — as
+#     opposed to an Unknown Gap, which is a risk you hadn't considered at all.
+#     The difference matters for your Section 4 gap count summary.
+#
+# Reference: https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html
 
 # ── API Gateway HTTP API ───────────────────────────────────────────────────────
 # HTTP API (not REST API) — lower cost, lower latency, sufficient for this use
