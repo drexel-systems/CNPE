@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-api
+  namespace: orders
+  labels:
+    app: order-api
+spec:
+  replicas: 2          # two replicas — stateless, so trivial to scale
+  selector:
+    matchLabels:
+      app: order-api
+  template:
+    metadata:
+      labels:
+        app: order-api
+    spec:
+      containers:
+        - name: api
+          image: k8s-order-api:latest
+          imagePullPolicy: Never   # use locally imported image (k3s ctr import)
+          ports:
+            - containerPort: 8080
+          env:
+            - name: NATS_URL
+              value: "nats://nats.orders.svc.cluster.local:4222"
+            - name: REDIS_ADDR
+              value: "redis.orders.svc.cluster.local:6379"
+            - name: PORT
+              value: "8080"
+          readinessProbe:
+            httpGet:
+              path: /orders
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /orders
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-api
+  namespace: orders
+spec:
+  selector:
+    app: order-api
+  ports:
+    - port: 80
+      targetPort: 8080

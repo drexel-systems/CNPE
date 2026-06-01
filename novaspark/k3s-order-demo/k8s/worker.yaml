@@ -1,0 +1,37 @@
+---
+# The worker is the processor Lambda equivalent.
+# It subscribes to NATS and writes to Redis — no inbound HTTP traffic,
+# so it gets a Deployment but no Service.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-worker
+  namespace: orders
+  labels:
+    app: order-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-worker
+  template:
+    metadata:
+      labels:
+        app: order-worker
+    spec:
+      containers:
+        - name: worker
+          image: k8s-order-worker:latest
+          imagePullPolicy: Never   # use locally imported image
+          env:
+            - name: NATS_URL
+              value: "nats://nats.orders.svc.cluster.local:4222"
+            - name: REDIS_ADDR
+              value: "redis.orders.svc.cluster.local:6379"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 64Mi

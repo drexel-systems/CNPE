@@ -1,0 +1,44 @@
+# ── Go ────────────────────────────────────────────────────────────────────────
+bin/
+dist/
+*.exe
+*.test
+*.out
+vendor/
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+.dockerignore
+
+# ── Kubernetes / k3s ──────────────────────────────────────────────────────────
+kubeconfig
+kubeconfig.yaml
+k3s.yaml
+*.kubeconfig
+
+# ── Environment / secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── VS Code ───────────────────────────────────────────────────────────────────
+.vscode/
+*.code-workspace
+
+# ── JetBrains / GoLand ───────────────────────────────────────────────────────
+.idea/
+*.iml
+
+# ── Pulumi (for when the aws/ directory gets built) ───────────────────────────
+.pulumi/
+Pulumi.*.yaml
+!Pulumi.yaml
+__pycache__/
+*.pyc
+.venv/

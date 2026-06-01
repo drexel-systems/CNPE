@@ -1,0 +1,44 @@
+##
+## Local development — run the full stack without k3s.
+## Useful for iterating on Go code before deploying to the cluster.
+##
+## Usage:
+##   docker compose up --build
+##   curl -X POST http://localhost:8080/orders \
+##        -H 'Content-Type: application/json' \
+##        -d '{"item":"widget","quantity":3}'
+
+services:
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  nats:
+    image: nats:2.10-alpine
+    args: ["--jetstream"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"   # monitoring: http://localhost:8222
+
+  api:
+    build: ./api
+    ports:
+      - "8080:8080"
+    environment:
+      NATS_URL:   nats://nats:4222
+      REDIS_ADDR: redis:6379
+      PORT:       "8080"
+    depends_on:
+      - redis
+      - nats
+
+  worker:
+    build: ./worker
+    environment:
+      NATS_URL:   nats://nats:4222
+      REDIS_ADDR: redis:6379
+    depends_on:
+      - redis
+      - nats

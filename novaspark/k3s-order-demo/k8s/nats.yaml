@@ -1,0 +1,51 @@
+---
+# NATS is the message broker — the SQS equivalent in this stack.
+# Single-node core NATS (no JetStream). For production persistence and
+# at-least-once delivery, enable JetStream: add `--js` to the args below.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nats
+  namespace: orders
+  labels:
+    app: nats
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nats
+  template:
+    metadata:
+      labels:
+        app: nats
+    spec:
+      containers:
+        - name: nats
+          image: nats:2.10-alpine
+          args: ["--jetstream"]   # enable JetStream for at-least-once delivery
+          ports:
+            - containerPort: 4222   # client connections
+            - containerPort: 8222   # HTTP monitoring endpoint
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats
+  namespace: orders
+spec:
+  selector:
+    app: nats
+  ports:
+    - name: client
+      port: 4222
+      targetPort: 4222
+    - name: monitor
+      port: 8222
+      targetPort: 8222
