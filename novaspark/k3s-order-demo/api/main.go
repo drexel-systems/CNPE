@@ -41,6 +41,7 @@ func main() {
 	r := gin.Default()
 	h := handlers.New(s, nc)
 	h.RegisterRoutes(r)
+	h.RegisterDebugRoutes(r) // chaos endpoints for k8s resilience demo
 
 	port := getenv("PORT", "8080")
 	log.Printf("API listening on :%s", port)
